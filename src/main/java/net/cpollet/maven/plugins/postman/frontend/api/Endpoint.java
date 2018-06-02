@@ -22,6 +22,10 @@ public class Endpoint {
     }
 
     public Endpoint withBaseUrl(String baseUrl) {
+        if (baseUrl == null || baseUrl.isEmpty()) {
+            return this;
+        }
+
         return new Endpoint(verb, path, bodyType, queryParametersNames, responseType, removeTrailingSlashes(baseUrl));
     }
 

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class EndpointTest {
     @Test
-    public void withBaseUrl_returnsNewEndpointInstance() {
+    public void withBaseUrl_returnsNewEndpointInstance_whenBaseUrlNotEmpty() {
         // GIVEN
         Endpoint endpoint = new Endpoint(null, null, null, null, null);
 
@@ -18,6 +18,32 @@ public class EndpointTest {
         Assertions.assertThat(newEndpoint)
                 .isNotNull()
                 .isNotSameAs(endpoint);
+    }
+
+    @Test
+    public void withBaseUrl_returnsItself_whenBaseUrlIsNull() {
+        // GIVEN
+        Endpoint endpoint = new Endpoint(null, "/index", null, null, null);
+
+        // WHEN
+        Endpoint newEndpoint = endpoint.withBaseUrl(null);
+
+        // THEN
+        Assertions.assertThat(newEndpoint)
+                .isSameAs(endpoint);
+    }
+
+    @Test
+    public void withBaseUrl_returnsItself_whenBaseUrlIsEmpty() {
+        // GIVEN
+        Endpoint endpoint = new Endpoint(null, "/index", null, null, null);
+
+        // WHEN
+        Endpoint newEndpoint = endpoint.withBaseUrl("");
+
+        // THEN
+        Assertions.assertThat(newEndpoint)
+                .isSameAs(endpoint);
     }
 
     @Test
