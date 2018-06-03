@@ -1,10 +1,7 @@
 package net.cpollet.maven.plugins.postman.frontend;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
-import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator;
 import com.fasterxml.jackson.module.jsonSchema.types.AnySchema;
 import com.fasterxml.jackson.module.jsonSchema.types.ArraySchema;
 import com.fasterxml.jackson.module.jsonSchema.types.BooleanSchema;
@@ -12,6 +9,7 @@ import com.fasterxml.jackson.module.jsonSchema.types.IntegerSchema;
 import com.fasterxml.jackson.module.jsonSchema.types.NullSchema;
 import com.fasterxml.jackson.module.jsonSchema.types.NumberSchema;
 import com.fasterxml.jackson.module.jsonSchema.types.ObjectSchema;
+import com.fasterxml.jackson.module.jsonSchema.types.ReferenceSchema;
 import com.fasterxml.jackson.module.jsonSchema.types.StringSchema;
 import lombok.Data;
 import org.assertj.core.api.Assertions;
@@ -19,6 +17,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class TestJsonExample {
     @Test
@@ -259,9 +258,90 @@ public class TestJsonExample {
                 ));
     }
 
+    @Test
+    public void generate_whenReferenceSchema() {
+        // GIVEN
+        JsonSchema namedSchema = new StringSchema();
+        namedSchema.setId("id");
+
+        JsonSchema schema = new ObjectSchema();
+        ((ObjectSchema) schema).setProperties(new HashMap<String, JsonSchema>() {{
+            put("prop1", namedSchema);
+            put("prop2", new ReferenceSchema("id"));
+        }});
+
+        JsonExample example = new JsonExample(schema);
+
+        // WHEN
+        String result = example.generate();
+
+        // THEN
+        Assertions.assertThat(result)
+                .contains("\"prop1\": \"string\"")
+                .contains("\"prop2\": \"string\"");
+    }
+
+    @Test
+    public void generate_whenRecursiveReference() {
+        // GIVEN
+        JsonSchema schema = new ReferenceSchema("id");
+        schema.setId("id");
+
+        JsonExample example = new JsonExample(schema);
+
+        // WHEN
+        String result = example.generate();
+
+        // THEN
+        Assertions.assertThat(result)
+        .isEqualTo("infinite recursion: id");
+    }
+
+    @Test
+    public void generate_full() throws JsonProcessingException {
+        // GIVEN
+        JsonExample jsonExample = JsonExample.from(User.class);
+
+        // WHEN
+        String result = jsonExample.generate();
+
+        // THEN
+        Assertions.assertThat(result)
+                .isEqualTo(String.join("\n",
+                        "{",
+                        "  \"username\": \"string\"",
+                        "  \"rights\": [",
+                        "    \"string\",",
+                        "    ...",
+                        "  ]",
+                        "  \"key\": {",
+                        "    \"privateKey\": \"string\"",
+                        "    \"publicKey\": \"string\"",
+                        "  }",
+                        "  \"altKeys\": [",
+                        "    {",
+                        "      \"privateKey\": \"string\"",
+                        "      \"publicKey\": \"string\"",
+                        "    },",
+                        "    ...",
+                        "  ]",
+                        "  \"parent\": infinite recursion: urn:jsonschema:net:cpollet:maven:plugins:postman:frontend:TestJsonExample:User",
+                        "}"
+                ));
+    }
+
     @Data
     public static class Key {
         private String privateKey;
         private String publicKey;
+    }
+
+    @Data
+    public static class User {
+        private String username;
+        private ArrayList<String> rights;
+        private Key key;
+        private List<Key> altKeys;
+        private User parent;
     }
 }

@@ -5,18 +5,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator;
 import com.fasterxml.jackson.module.jsonSchema.types.ArraySchema;
+import com.fasterxml.jackson.module.jsonSchema.types.NullSchema;
 import com.fasterxml.jackson.module.jsonSchema.types.ObjectSchema;
-import lombok.AllArgsConstructor;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
 public class JsonExample {
     private final JsonSchema schema;
     private final int level;
+    private final Map<String, JsonSchema> schemas; // TODO static member?
+    private final List<JsonSchema> parents; // TODO push/pop in static member?
 
     public static JsonExample from(Class clazz) {
         ObjectMapper mapper = new ObjectMapper();
@@ -30,7 +34,34 @@ public class JsonExample {
     }
 
     public JsonExample(JsonSchema schema) {
-        this(schema, 0);
+        this(schema, 0, new HashMap<>(), new ArrayList<>());
+    }
+
+    private JsonExample(JsonSchema schema, int level, Map<String, JsonSchema> schemas, List<JsonSchema> parents) {
+        this.schema = schema;
+        this.level = level;
+        this.schemas = schemas;
+        this.parents = new ArrayList<>(parents);
+        this.parents.add(schema);
+
+        // only process from root schema, in order to avoid useless passes when processing sub-schemas later on
+        if (level == 0) {
+            fillSchemas(schema);
+        }
+    }
+
+    private void fillSchemas(JsonSchema schema) {
+        if (schema.getId() != null && !schemas.containsKey(schema.getId())) {
+            schemas.put(schema.getId(), schema);
+        }
+
+        if (schema.isObjectSchema()) {
+            Map<String, JsonSchema> properties = ((ObjectSchema) schema).getProperties();
+
+            for (JsonSchema innerSchema : properties.values()) {
+                fillSchemas(innerSchema);
+            }
+        }
     }
 
     public String generate() {
@@ -57,7 +88,7 @@ public class JsonExample {
         if (schema.isArraySchema()) {
             ArraySchema.Items items = ((ArraySchema) schema).getItems();
             if (items != null && items.isSingleItems()) {
-                JsonExample content = new JsonExample(((ArraySchema.SingleItems) items).getSchema(), level + 1);
+                JsonExample content = child(((ArraySchema.SingleItems) items).getSchema());
 
                 return indent(
                         String.join("\n",
@@ -87,18 +118,32 @@ public class JsonExample {
                     .map(e -> String.format(
                             "\"%s\": %s",
                             e.getKey(),
-                            new JsonExample(e.getValue(), level + 1).generate().trim()
+                            child(e.getValue()).generate().trim() // trim because it does not start on its own line
                     ))
                     .map(s -> indent(s, 1))
                     .collect(Collectors.toList());
 
-
-            return String.format("{\n%s\n}", String.join("\n", props));
+            return String.format("%s\n%s\n%s",
+                    indent("{"),
+                    String.join("\n", props),
+                    indent("}"));
         }
 
-        // TODO handle ReferenceSchema
+        if (!schema.get$ref().isEmpty()) {
+            JsonSchema referencedSchema = schemas.getOrDefault(schema.get$ref(), new NullSchema());
+
+            if (parents.contains(referencedSchema)) {
+                return "infinite recursion: " + schema.get$ref();
+            }
+
+            return new JsonExample(referencedSchema, level, schemas, parents).generate();
+        }
 
         throw new IllegalArgumentException(schema.getClass().getCanonicalName() + " is not supported");
+    }
+
+    private JsonExample child(JsonSchema schema) {
+        return new JsonExample(schema, level + 1, schemas, parents);
     }
 
     private String indent(String str) {
