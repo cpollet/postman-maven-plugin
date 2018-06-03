@@ -2,6 +2,8 @@ package net.cpollet.maven.plugins.postman;
 
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import net.cpollet.maven.plugins.postman.backend.adapters.ClassAdapter;
+import net.cpollet.maven.plugins.postman.frontend.api.Endpoint;
+import net.cpollet.maven.plugins.postman.frontend.curl.Curl;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 
@@ -16,6 +18,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Mojo(name = "generate", defaultPhase = LifecyclePhase.PACKAGE)
 public class Generate extends AbstractMojo {
@@ -28,7 +31,7 @@ public class Generate extends AbstractMojo {
     @Parameter(property = "project.packaging", required = true, readonly = true)
     private String packaging;
 
-    @Parameter(name = "baseUrl", defaultValue = "http://localhost:8000")
+    @Parameter(name = "baseUrl")
     private String baseUrl;
 
     @Parameter(name = "packagesToScan", required = true)
@@ -53,11 +56,17 @@ public class Generate extends AbstractMojo {
                 .matchClassesWithAnnotation(Path.class, classesToScan::add)
                 .scan();
 
-        classesToScan.stream()
+        List<Endpoint> endpoints = classesToScan.stream()
                 .map(c -> new ClassAdapter(c).getEndpoints())
                 .flatMap(List::stream)
                 .map(e -> e.withBaseUrl(baseUrl))
-                .forEach(e -> getLog().info(e.toString()));
+                .collect(Collectors.toList());
+
+        endpoints.forEach(e -> getLog().info(e.toString()));
+
+        endpoints.stream()
+                .map(Curl::new)
+                .forEach(c -> getLog().info(c.generate()));
     }
 
     private ClassLoader classLoader(File jarFile) {
