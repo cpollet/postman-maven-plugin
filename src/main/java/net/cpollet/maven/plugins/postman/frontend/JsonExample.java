@@ -8,7 +8,6 @@ import com.fasterxml.jackson.module.jsonSchema.types.ArraySchema;
 import com.fasterxml.jackson.module.jsonSchema.types.NullSchema;
 import com.fasterxml.jackson.module.jsonSchema.types.ObjectSchema;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -93,8 +92,7 @@ public class JsonExample {
                 return indent(
                         String.join("\n",
                                 "[", // already indented by default
-                                content.generate() + ",",
-                                indent("...", 1),
+                                content.generate(),
                                 indent("]")
                         )
                 );

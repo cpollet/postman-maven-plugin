@@ -132,8 +132,7 @@ public class TestJsonExample {
         Assertions.assertThat(result)
                 .isEqualTo(String.join("\n",
                         "[",
-                        "  \"string\",",
-                        "  ...",
+                        "  \"string\"",
                         "]"
                 ));
     }
@@ -157,10 +156,8 @@ public class TestJsonExample {
                 .isEqualTo(String.join("\n",
                         "[",
                         "  [",
-                        "    0,",
-                        "    ...",
-                        "  ],",
-                        "  ...",
+                        "    0",
+                        "  ]",
                         "]"
                 ));
     }
@@ -220,8 +217,7 @@ public class TestJsonExample {
                 .isEqualTo(String.join("\n",
                         "{",
                         "  \"myIntArray\": [",
-                        "    0,",
-                        "    ...",
+                        "    0",
                         "  ]",
                         "}"
                 ));
@@ -311,8 +307,7 @@ public class TestJsonExample {
                         "{",
                         "  \"username\": \"string\",",
                         "  \"rights\": [",
-                        "    \"string\",",
-                        "    ...",
+                        "    \"string\"",
                         "  ],",
                         "  \"key\": {",
                         "    \"privateKey\": \"string\",",
@@ -322,8 +317,7 @@ public class TestJsonExample {
                         "    {",
                         "      \"privateKey\": \"string\",",
                         "      \"publicKey\": \"string\"",
-                        "    },",
-                        "    ...",
+                        "    }",
                         "  ],",
                         "  \"parent\": infinite recursion: urn:jsonschema:net:cpollet:maven:plugins:postman:frontend:TestJsonExample:User",
                         "}"
