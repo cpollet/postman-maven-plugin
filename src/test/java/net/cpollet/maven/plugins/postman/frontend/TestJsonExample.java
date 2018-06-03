@@ -252,7 +252,7 @@ public class TestJsonExample {
         Assertions.assertThat(result)
                 .isEqualTo(String.join("\n",
                         "{",
-                        "  \"privateKey\": \"string\"",
+                        "  \"privateKey\": \"string\",",
                         "  \"publicKey\": \"string\"",
                         "}"
                 ));
@@ -309,22 +309,22 @@ public class TestJsonExample {
         Assertions.assertThat(result)
                 .isEqualTo(String.join("\n",
                         "{",
-                        "  \"username\": \"string\"",
+                        "  \"username\": \"string\",",
                         "  \"rights\": [",
                         "    \"string\",",
                         "    ...",
-                        "  ]",
+                        "  ],",
                         "  \"key\": {",
-                        "    \"privateKey\": \"string\"",
+                        "    \"privateKey\": \"string\",",
                         "    \"publicKey\": \"string\"",
-                        "  }",
+                        "  },",
                         "  \"altKeys\": [",
                         "    {",
-                        "      \"privateKey\": \"string\"",
+                        "      \"privateKey\": \"string\",",
                         "      \"publicKey\": \"string\"",
                         "    },",
                         "    ...",
-                        "  ]",
+                        "  ],",
                         "  \"parent\": infinite recursion: urn:jsonschema:net:cpollet:maven:plugins:postman:frontend:TestJsonExample:User",
                         "}"
                 ));

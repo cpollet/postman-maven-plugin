@@ -125,7 +125,7 @@ public class JsonExample {
 
             return String.format("%s\n%s\n%s",
                     indent("{"),
-                    String.join("\n", props),
+                    String.join(",\n", props),
                     indent("}"));
         }
 
