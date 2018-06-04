@@ -86,7 +86,12 @@ public class JsonExample {
 
         if (schema.isArraySchema()) {
             ArraySchema.Items items = ((ArraySchema) schema).getItems();
-            if (items != null && items.isSingleItems()) {
+
+            if (items == null) {
+                return indent("[]");
+            }
+
+            if (items.isSingleItems()) {
                 JsonExample content = child(((ArraySchema.SingleItems) items).getSchema());
 
                 return indent(
@@ -98,11 +103,7 @@ public class JsonExample {
                 );
             }
 
-            if (items != null && items.isArrayItems()) {
-                throw new IllegalArgumentException(items.getClass().getCanonicalName() + " is not supported");
-            }
-
-            return indent("[]");
+            throw new IllegalArgumentException(items.getClass().getCanonicalName() + " is not supported");
         }
 
         if (schema.isObjectSchema()) {
