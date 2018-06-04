@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 @AllArgsConstructor
 public class Curl {
-    private final static Map<Endpoint.Verb, String> verbFlags = Collections.unmodifiableMap(Stream.of(
+    private static final Map<Endpoint.Verb, String> verbFlags = Collections.unmodifiableMap(Stream.of(
             new AbstractMap.SimpleEntry<>(Endpoint.Verb.GET, "--get "),
             new AbstractMap.SimpleEntry<>(Endpoint.Verb.POST, "-X POST "), // --data
             new AbstractMap.SimpleEntry<>(Endpoint.Verb.PUT, "-X PUT "), // or -T with file

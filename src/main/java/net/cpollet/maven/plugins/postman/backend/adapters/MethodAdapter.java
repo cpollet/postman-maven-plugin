@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 
 @AllArgsConstructor
 public class MethodAdapter {
-    private final static Map<Class<? extends Annotation>, Endpoint.Verb> verbs = Collections.unmodifiableMap(Stream.of(
+    private static final Map<Class<? extends Annotation>, Endpoint.Verb> verbs = Collections.unmodifiableMap(Stream.of(
             new AbstractMap.SimpleEntry<>(GET.class, Endpoint.Verb.GET),
             new AbstractMap.SimpleEntry<>(POST.class, Endpoint.Verb.POST),
             new AbstractMap.SimpleEntry<>(PUT.class, Endpoint.Verb.PUT),
