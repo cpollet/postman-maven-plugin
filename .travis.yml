@@ -6,11 +6,18 @@ jdk:
 cache:
   directories:
     - $HOME/.m2
+    - $HOME/.sonar/cache
 
 install: true
 
+addons:
+  sonarqube:
+    organization: "cpollet-github"
+    token:
+      secure: $SONARQUBE_TOKEN
+
 script:
-  - mvn verify
+  - mvn org.jacoco:jacoco-maven-plugin:prepare-agent verify sonar:sonar
 
 branches:
   only:

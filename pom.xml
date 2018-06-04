@@ -10,7 +10,7 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
-    <name>postman-maven-plugin Maven Plugin</name>
+    <name>Postman Maven Plugin</name>
     <url>https://github.com/cpollet/postman-maven-plugin</url>
 
     <prerequisites>
