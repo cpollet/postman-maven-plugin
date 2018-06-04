@@ -5,21 +5,23 @@ import net.cpollet.maven.plugins.postman.frontend.JsonExample;
 import net.cpollet.maven.plugins.postman.frontend.api.Endpoint;
 import org.codehaus.plexus.util.StringUtils;
 
-import java.util.HashMap;
+import java.util.AbstractMap;
+import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @AllArgsConstructor
 public class Curl {
-    private final static Map<Endpoint.Verb, String> verbFlags = new HashMap<Endpoint.Verb, String>() {{
-        put(Endpoint.Verb.GET, "--get ");
-        put(Endpoint.Verb.POST, "-X POST "); // --data
-        put(Endpoint.Verb.PUT, "-X PUT "); // or -T with file
-        put(Endpoint.Verb.DELETE, "-X DELETE ");
-        put(Endpoint.Verb.HEAD, "--head ");
-        put(Endpoint.Verb.OPTIONS, "-X OPTIONS ");
-        put(Endpoint.Verb.PATCH, "-X PATCH ");
-    }};
+    private final static Map<Endpoint.Verb, String> verbFlags = Collections.unmodifiableMap(Stream.of(
+            new AbstractMap.SimpleEntry<>(Endpoint.Verb.GET, "--get "),
+            new AbstractMap.SimpleEntry<>(Endpoint.Verb.POST, "-X POST "), // --data
+            new AbstractMap.SimpleEntry<>(Endpoint.Verb.PUT, "-X PUT "), // or -T with file
+            new AbstractMap.SimpleEntry<>(Endpoint.Verb.DELETE, "-X DELETE "),
+            new AbstractMap.SimpleEntry<>(Endpoint.Verb.HEAD, "--head "),
+            new AbstractMap.SimpleEntry<>(Endpoint.Verb.OPTIONS, "-X OPTIONS "),
+            new AbstractMap.SimpleEntry<>(Endpoint.Verb.PATCH, "-X PATCH ")
+    ).collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue)));
 
     private final Endpoint endpoint;
 

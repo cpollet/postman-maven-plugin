@@ -13,23 +13,25 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.AbstractMap;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @AllArgsConstructor
 public class MethodAdapter {
-    private final static Map<Class<? extends Annotation>, Endpoint.Verb> verbs = new HashMap<Class<? extends Annotation>, Endpoint.Verb>() {{
-        put(GET.class, Endpoint.Verb.GET);
-        put(POST.class, Endpoint.Verb.POST);
-        put(PUT.class, Endpoint.Verb.PUT);
-        put(DELETE.class, Endpoint.Verb.DELETE);
-        put(HEAD.class, Endpoint.Verb.HEAD);
-        put(OPTIONS.class, Endpoint.Verb.OPTIONS);
-        put(PATCH.class, Endpoint.Verb.PATCH);
-    }};
+    private final static Map<Class<? extends Annotation>, Endpoint.Verb> verbs = Collections.unmodifiableMap(Stream.of(
+            new AbstractMap.SimpleEntry<>(GET.class, Endpoint.Verb.GET),
+            new AbstractMap.SimpleEntry<>(POST.class, Endpoint.Verb.POST),
+            new AbstractMap.SimpleEntry<>(PUT.class, Endpoint.Verb.PUT),
+            new AbstractMap.SimpleEntry<>(DELETE.class, Endpoint.Verb.DELETE),
+            new AbstractMap.SimpleEntry<>(HEAD.class, Endpoint.Verb.HEAD),
+            new AbstractMap.SimpleEntry<>(OPTIONS.class, Endpoint.Verb.OPTIONS),
+            new AbstractMap.SimpleEntry<>(PATCH.class, Endpoint.Verb.PATCH)
+    ).collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue)));
 
     private final Method method;
 
