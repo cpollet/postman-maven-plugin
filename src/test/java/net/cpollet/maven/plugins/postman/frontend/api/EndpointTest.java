@@ -97,4 +97,22 @@ public class EndpointTest {
         Assertions.assertThat(newEndpoint.getUrl())
                 .isEqualTo("http://localhost/index");
     }
+
+    @Test
+    public void withAuthentication_returnsNewEndpoint() {
+        // GIVEN
+        Endpoint endpoint = new Endpoint(null, null, null, null, null);
+
+        // WHEN
+        Endpoint newEndpoint = endpoint.withAuthentication("username", "password");
+
+        // THEN
+        Assertions.assertThat(newEndpoint)
+                .isNotSameAs(endpoint);
+
+        Assertions.assertThat(newEndpoint.getUsername())
+                .isEqualTo("username");
+        Assertions.assertThat(newEndpoint.getPassword())
+                .isEqualTo("password");
+    }
 }

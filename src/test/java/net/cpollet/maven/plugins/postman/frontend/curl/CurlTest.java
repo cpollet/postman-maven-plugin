@@ -163,4 +163,44 @@ public class CurlTest {
         Assertions.assertThat(result)
                 .contains("-d '\"string\"' ");
     }
+
+    @Test
+    public void generate_generatesUsernamePassword() {
+        // GIVEN
+        Mockito.when(endpoint.getUsername()).thenReturn("username");
+        Mockito.when(endpoint.getPassword()).thenReturn("password");
+
+        // WHEN
+        String result = curl.generate();
+
+        // THEN
+        Assertions.assertThat(result)
+                .contains("-u username:password ");
+    }
+
+    @Test
+    public void generate_doesNotGeneratesUsernamePassword_whenUsernameNotSet() {
+        // GIVEN
+        Mockito.when(endpoint.getPassword()).thenReturn("password");
+
+        // WHEN
+        String result = curl.generate();
+
+        // THEN
+        Assertions.assertThat(result)
+                .doesNotContain("-u ");
+    }
+
+    @Test
+    public void generate_doesNotGeneratesUsernamePassword_whenPasswordNotSet() {
+        // GIVEN
+        Mockito.when(endpoint.getPassword()).thenReturn("username");
+
+        // WHEN
+        String result = curl.generate();
+
+        // THEN
+        Assertions.assertThat(result)
+                .doesNotContain("-u ");
+    }
 }

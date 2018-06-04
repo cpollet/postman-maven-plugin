@@ -16,9 +16,11 @@ public class Endpoint {
     private final List<String> queryParametersNames;
     private final Class responseType;
     private final String base;
+    private final String username;
+    private final String password;
 
     public Endpoint(Verb verb, String path, Class bodyType, List<String> queryParametersNames, Class responseType) {
-        this(verb, path, bodyType, queryParametersNames, responseType, "");
+        this(verb, path, bodyType, queryParametersNames, responseType, "", "", "");
     }
 
     public Endpoint withBaseUrl(String baseUrl) {
@@ -26,7 +28,11 @@ public class Endpoint {
             return this;
         }
 
-        return new Endpoint(verb, path, bodyType, queryParametersNames, responseType, removeTrailingSlashes(baseUrl));
+        return new Endpoint(verb, path, bodyType, queryParametersNames, responseType, removeTrailingSlashes(baseUrl), username, password);
+    }
+
+    public Endpoint withAuthentication(String username, String password) {
+        return new Endpoint(verb, path, bodyType, queryParametersNames, responseType, base, username, password);
     }
 
     private String removeTrailingSlashes(String path) {

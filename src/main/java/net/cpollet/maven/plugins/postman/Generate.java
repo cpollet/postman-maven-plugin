@@ -6,7 +6,6 @@ import net.cpollet.maven.plugins.postman.frontend.api.Endpoint;
 import net.cpollet.maven.plugins.postman.frontend.curl.Curl;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -31,13 +30,20 @@ public class Generate extends AbstractMojo {
     @Parameter(property = "project.packaging", required = true, readonly = true)
     private String packaging;
 
-    @Parameter(name = "baseUrl")
-    private String baseUrl;
-
     @Parameter(name = "packagesToScan", required = true)
     private String[] packagesToScan;
 
+    @Parameter(name = "baseUrl")
+    private String baseUrl;
+
+    @Parameter(name = "basicAuth")
+    private BasicAuth basicAuth;
+
     public void execute() throws MojoExecutionException {
+        if (basicAuth == null) {
+            basicAuth = new BasicAuth();
+        }
+
         File jarFile = new File(String.format("%s/%s.%s", directory, finalName, packaging));
 
         if (!jarFile.exists()) {
@@ -60,6 +66,7 @@ public class Generate extends AbstractMojo {
                 .map(c -> new ClassAdapter(c).getEndpoints())
                 .flatMap(List::stream)
                 .map(e -> e.withBaseUrl(baseUrl))
+                .map(e -> e.withAuthentication(basicAuth.getUsername(), basicAuth.getPassword()))
                 .collect(Collectors.toList());
 
         endpoints.forEach(e -> getLog().info(e.toString()));

@@ -3,6 +3,7 @@ package net.cpollet.maven.plugins.postman.frontend.curl;
 import lombok.AllArgsConstructor;
 import net.cpollet.maven.plugins.postman.frontend.JsonExample;
 import net.cpollet.maven.plugins.postman.frontend.api.Endpoint;
+import org.codehaus.plexus.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,8 +24,17 @@ public class Curl {
     private final Endpoint endpoint;
 
     public String generate() {
-        return String.format("curl %s%s%s'%s'", verb(), queryParameters(), body(), endpoint.getUrl());
+        return String.format("curl %s%s%s%s'%s'", auth(), verb(), queryParameters(), body(), endpoint.getUrl());
     }
+
+    private String auth() {
+        if (!StringUtils.isEmpty(endpoint.getUsername()) && !StringUtils.isEmpty(endpoint.getPassword())) {
+            return String.format("-u %s:%s ", endpoint.getUsername(), endpoint.getPassword());
+        }
+
+        return "";
+    }
+
 
     private String body() {
         if (endpoint.getBodyType() == null) {
