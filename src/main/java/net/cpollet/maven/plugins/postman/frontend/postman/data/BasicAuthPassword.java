@@ -8,12 +8,11 @@ import lombok.Data;
 public class BasicAuthPassword implements BasicAuthField {
     @SuppressWarnings("UnusedAssignment") // used by the Builder.Default annotation
     @Builder.Default
+    private final String key = "password";
 
-    private String key = "password";
     @SuppressWarnings("UnusedAssignment") // used by the Builder.Default annotation
     @Builder.Default
-
-    private String type = "string";
+    private final String type = "string";
 
     private String value;
 }

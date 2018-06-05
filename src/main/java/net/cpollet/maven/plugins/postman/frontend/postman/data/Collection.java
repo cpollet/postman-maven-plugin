@@ -13,6 +13,7 @@ import java.util.List;
 @Builder
 public class Collection {
     private Information info;
+
     @Singular
     private List<ItemOrFolder> items;
 }
