@@ -26,6 +26,7 @@ public class CurlTest {
     @Test
     public void generate_generatesCurlCommand() {
         // GIVEN
+        Mockito.when(endpoint.getBodyType()).thenReturn(Void.class);
 
         // WHEN
         String result = curl.generate();
@@ -38,6 +39,7 @@ public class CurlTest {
     @Test
     public void generate_generatesDataFlag_forQueryParameters() {
         // GIVEN
+        Mockito.when(endpoint.getBodyType()).thenReturn(Void.class);
         Mockito.when(endpoint.getQueryParametersNames()).thenReturn(Arrays.asList("p1", "p2"));
 
         // WHEN
@@ -51,6 +53,7 @@ public class CurlTest {
     @Test
     public void generate_generatesGet() {
         // GIVEN
+        Mockito.when(endpoint.getBodyType()).thenReturn(Void.class);
         Mockito.when(endpoint.getVerb()).thenReturn(Endpoint.Verb.GET);
         Mockito.when(endpoint.getUrl()).thenReturn("url");
 
@@ -65,6 +68,7 @@ public class CurlTest {
     @Test
     public void generate_generatesPost() {
         // GIVEN
+        Mockito.when(endpoint.getBodyType()).thenReturn(Void.class);
         Mockito.when(endpoint.getVerb()).thenReturn(Endpoint.Verb.POST);
 
         // WHEN
@@ -78,6 +82,7 @@ public class CurlTest {
     @Test
     public void generate_generatesPut() {
         // GIVEN
+        Mockito.when(endpoint.getBodyType()).thenReturn(Void.class);
         Mockito.when(endpoint.getVerb()).thenReturn(Endpoint.Verb.PUT);
 
         // WHEN
@@ -91,6 +96,7 @@ public class CurlTest {
     @Test
     public void generate_generatesDelete() {
         // GIVEN
+        Mockito.when(endpoint.getBodyType()).thenReturn(Void.class);
         Mockito.when(endpoint.getVerb()).thenReturn(Endpoint.Verb.DELETE);
 
         // WHEN
@@ -104,6 +110,7 @@ public class CurlTest {
     @Test
     public void generate_generatesHead() {
         // GIVEN
+        Mockito.when(endpoint.getBodyType()).thenReturn(Void.class);
         Mockito.when(endpoint.getVerb()).thenReturn(Endpoint.Verb.HEAD);
 
         // WHEN
@@ -117,6 +124,7 @@ public class CurlTest {
     @Test
     public void generate_generatesOptions() {
         // GIVEN
+        Mockito.when(endpoint.getBodyType()).thenReturn(Void.class);
         Mockito.when(endpoint.getVerb()).thenReturn(Endpoint.Verb.OPTIONS);
 
         // WHEN
@@ -130,6 +138,7 @@ public class CurlTest {
     @Test
     public void generate_generatesPatch() {
         // GIVEN
+        Mockito.when(endpoint.getBodyType()).thenReturn(Void.class);
         Mockito.when(endpoint.getVerb()).thenReturn(Endpoint.Verb.PATCH);
 
         // WHEN
@@ -143,7 +152,7 @@ public class CurlTest {
     @Test
     public void generate_generatesNoBodyParameter() {
         // GIVEN
-        Mockito.when(endpoint.getBodyType()).thenReturn(null);
+        Mockito.when(endpoint.getBodyType()).thenReturn(Void.class);
 
         // WHEN
         String result = curl.generate();
@@ -167,6 +176,7 @@ public class CurlTest {
     @Test
     public void generate_generatesUsernamePassword() {
         // GIVEN
+        Mockito.when(endpoint.getBodyType()).thenReturn(Void.class);
         Mockito.when(endpoint.getUsername()).thenReturn("username");
         Mockito.when(endpoint.getPassword()).thenReturn("password");
 
@@ -181,6 +191,7 @@ public class CurlTest {
     @Test
     public void generate_doesNotGeneratesUsernamePassword_whenUsernameNotSet() {
         // GIVEN
+        Mockito.when(endpoint.getBodyType()).thenReturn(Void.class);
         Mockito.when(endpoint.getPassword()).thenReturn("password");
 
         // WHEN
@@ -194,6 +205,7 @@ public class CurlTest {
     @Test
     public void generate_doesNotGeneratesUsernamePassword_whenPasswordNotSet() {
         // GIVEN
+        Mockito.when(endpoint.getBodyType()).thenReturn(Void.class);
         Mockito.when(endpoint.getPassword()).thenReturn("username");
 
         // WHEN

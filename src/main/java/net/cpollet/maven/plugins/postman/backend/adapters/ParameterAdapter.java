@@ -2,6 +2,7 @@ package net.cpollet.maven.plugins.postman.backend.adapters;
 
 import lombok.AllArgsConstructor;
 
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import java.lang.reflect.Parameter;
 import java.util.Optional;
@@ -23,7 +24,11 @@ public class ParameterAdapter {
     }
 
     public boolean isHttpBodyParameter() {
-        return !isHttpQueryParameter();
+        return !isHttpQueryParameter() && !isHttpPathParameter();
+    }
+
+    private boolean isHttpPathParameter() {
+        return parameter.isAnnotationPresent(PathParam.class);
     }
 
     public Class getType() {

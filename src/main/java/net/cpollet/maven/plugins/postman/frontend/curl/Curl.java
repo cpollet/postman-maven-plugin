@@ -41,7 +41,7 @@ public class Curl implements Generator {
 
 
     private String body() {
-        if (endpoint.getBodyType() == null) {
+        if (endpoint.getBodyType() == Void.class) {
             return "";
         }
 
