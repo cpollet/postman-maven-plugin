@@ -410,6 +410,19 @@ public class MethodAdapterTest {
                 .isEqualTo(String.class);
     }
 
+    @Test
+    public void getName_returnsMethodName() throws NoSuchMethodException {
+        // GIVEN
+        MethodAdapter adapter = adapt("nonVoid");
+
+        // WHEN
+        String name = adapter.getName();
+
+        // THEN
+        Assertions.assertThat(name)
+                .isEqualTo("nonVoid");
+    }
+
     @SuppressWarnings({"unused"}) //because of reflection
     public String nonVoid() {
         return null;

@@ -19,6 +19,7 @@ public class ClassAdapter {
                         .map(MethodAdapter::new)
                         .filter(MethodAdapter::isHttpEndpoint)
                         .map(m -> new Endpoint(
+                                m.getName(),
                                 m.getVerb(),
                                 getPath() + m.getPath(),
                                 m.getBodyParameterType(),

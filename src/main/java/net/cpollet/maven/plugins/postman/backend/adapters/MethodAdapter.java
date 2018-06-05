@@ -85,4 +85,8 @@ public class MethodAdapter {
 
         return method.getReturnType();
     }
+
+    public String getName() {
+        return method.getName();
+    }
 }

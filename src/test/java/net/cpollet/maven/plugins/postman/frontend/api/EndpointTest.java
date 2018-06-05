@@ -9,7 +9,7 @@ public class EndpointTest {
     @Test
     public void withBaseUrl_returnsNewEndpointInstance_whenBaseUrlNotEmpty() {
         // GIVEN
-        Endpoint endpoint = new Endpoint(null, null, null, null, null);
+        Endpoint endpoint = new Endpoint(null, null, null, null, null, null);
 
         // WHEN
         Endpoint newEndpoint = endpoint.withBaseUrl("http://localhost");
@@ -23,7 +23,7 @@ public class EndpointTest {
     @Test
     public void withBaseUrl_returnsItself_whenBaseUrlIsNull() {
         // GIVEN
-        Endpoint endpoint = new Endpoint(null, "/index", null, null, null);
+        Endpoint endpoint = new Endpoint(null, null, "/index", null, null, null);
 
         // WHEN
         Endpoint newEndpoint = endpoint.withBaseUrl(null);
@@ -36,7 +36,7 @@ public class EndpointTest {
     @Test
     public void withBaseUrl_returnsItself_whenBaseUrlIsEmpty() {
         // GIVEN
-        Endpoint endpoint = new Endpoint(null, "/index", null, null, null);
+        Endpoint endpoint = new Endpoint(null, null, "/index", null, null, null);
 
         // WHEN
         Endpoint newEndpoint = endpoint.withBaseUrl("");
@@ -50,12 +50,15 @@ public class EndpointTest {
     public void withBaseUrl_returnsNewEndpoint_withSameAttributes() {
         // GIVEN
         ArrayList<String> names = new ArrayList<>();
-        Endpoint endpoint = new Endpoint(Endpoint.Verb.GET, "path", String.class, names, Long.class);
+        Endpoint endpoint = new Endpoint("name", Endpoint.Verb.GET, "path", String.class, names, Long.class);
 
         // WHEN
         Endpoint newEndpoint = endpoint.withBaseUrl("http://localhost");
 
         // THEN
+        Assertions.assertThat(newEndpoint.getName())
+                .isEqualTo("name");
+
         Assertions.assertThat(newEndpoint.getVerb())
                 .isEqualTo(Endpoint.Verb.GET);
 
@@ -75,7 +78,7 @@ public class EndpointTest {
     @Test
     public void withBaseUrl_returnsNewEndpoint_hasCorrectBase() {
         // GIVEN
-        Endpoint endpoint = new Endpoint(null, "/index", null, null, null);
+        Endpoint endpoint = new Endpoint(null, null, "/index", null, null, null);
 
         // WHEN
         Endpoint newEndpoint = endpoint.withBaseUrl("http://localhost");
@@ -88,7 +91,7 @@ public class EndpointTest {
     @Test
     public void withBaseUrl_removesTrailingSlashes() {
         // GIVEN
-        Endpoint endpoint = new Endpoint(null, "/index", null, null, null);
+        Endpoint endpoint = new Endpoint(null, null, "/index", null, null, null);
 
         // WHEN
         Endpoint newEndpoint = endpoint.withBaseUrl("http://localhost///");
@@ -101,7 +104,7 @@ public class EndpointTest {
     @Test
     public void withAuthentication_returnsNewEndpoint() {
         // GIVEN
-        Endpoint endpoint = new Endpoint(null, null, null, null, null);
+        Endpoint endpoint = new Endpoint(null, null, null, null, null, null);
 
         // WHEN
         Endpoint newEndpoint = endpoint.withAuthentication("username", "password");
