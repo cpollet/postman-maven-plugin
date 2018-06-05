@@ -19,7 +19,7 @@ public class JsonExample {
     private final JsonSchema schema;
     private final int level;
     private final Map<String, JsonSchema> schemas; // TODO static member?
-    private final List<JsonSchema> parents; // TODO push/pop in static member?
+    private final List<JsonSchema> parents;
 
     public static JsonExample from(Class clazz) {
         ObjectMapper mapper = new ObjectMapper();

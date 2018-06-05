@@ -5,22 +5,23 @@ import org.junit.Test;
 
 import javax.ws.rs.QueryParam;
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 public class ParameterAdapterTest {
     private final static int NO_QUERY_PARAM = 0;
     private static final int QUERY_PARAM = 1;
 
     @Test
-    public void getQueryParamName_returnsNull_whenNoQueryParam() throws NoSuchMethodException {
+    public void getQueryParamName_returnsEmptyOptional_whenNoQueryParam() throws NoSuchMethodException {
         // GIVEN
         ParameterAdapter parameterAdapter = adapt(NO_QUERY_PARAM);
 
         // WHEN
-        String queryParamName = parameterAdapter.getQueryParamName();
+        Optional<String> queryParamName = parameterAdapter.getQueryParamName();
 
         // THEN
         Assertions.assertThat(queryParamName)
-                .isNull();
+                .isEmpty();
     }
 
     @Test
@@ -41,11 +42,11 @@ public class ParameterAdapterTest {
         ParameterAdapter parameterAdapter = adapt(QUERY_PARAM);
 
         // WHEN
-        String queryParamName = parameterAdapter.getQueryParamName();
+        Optional<String> queryParamName = parameterAdapter.getQueryParamName();
 
         // THEN
         Assertions.assertThat(queryParamName)
-                .isEqualTo("name");
+                .contains("name");
     }
 
     @Test

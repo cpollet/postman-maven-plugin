@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -58,6 +59,7 @@ public class MethodAdapter {
                 .map(ParameterAdapter::new)
                 .filter(ParameterAdapter::isHttpQueryParameter)
                 .map(ParameterAdapter::getQueryParamName)
+                .map(Optional::get) // we are sure it's present, because of above filter calling isHttpQueryParameter
                 .collect(Collectors.toList());
     }
 
@@ -67,7 +69,7 @@ public class MethodAdapter {
                 .filter(ParameterAdapter::isHttpBodyParameter)
                 .findFirst()
                 .map(ParameterAdapter::getType)
-                .orElse(null);//FIXME return optional
+                .orElse(Void.class);
     }
 
     public boolean hasBodyParameter() {

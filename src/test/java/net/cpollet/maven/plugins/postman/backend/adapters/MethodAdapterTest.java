@@ -351,7 +351,7 @@ public class MethodAdapterTest {
 
         // THEN
         Assertions.assertThat(type)
-                .isNull();
+                .isEqualTo(Void.class);
     }
 
     @Test

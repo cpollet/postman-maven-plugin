@@ -4,17 +4,18 @@ import lombok.AllArgsConstructor;
 
 import javax.ws.rs.QueryParam;
 import java.lang.reflect.Parameter;
+import java.util.Optional;
 
 @AllArgsConstructor
 public class ParameterAdapter {
     private final Parameter parameter;
 
-    public String getQueryParamName() {
+    public Optional<String> getQueryParamName() {
         if (isHttpQueryParameter()) {
-            return parameter.getAnnotation(QueryParam.class).value();
+            return Optional.of(parameter.getAnnotation(QueryParam.class).value());
         }
 
-        return null; // FIXME return optional
+        return Optional.empty();
     }
 
     public boolean isHttpQueryParameter() {
