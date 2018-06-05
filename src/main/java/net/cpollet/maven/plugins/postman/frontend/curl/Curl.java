@@ -1,6 +1,7 @@
 package net.cpollet.maven.plugins.postman.frontend.curl;
 
 import lombok.AllArgsConstructor;
+import net.cpollet.maven.plugins.postman.frontend.Generator;
 import net.cpollet.maven.plugins.postman.frontend.JsonExample;
 import net.cpollet.maven.plugins.postman.frontend.api.Endpoint;
 import org.codehaus.plexus.util.StringUtils;
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @AllArgsConstructor
-public class Curl {
+public class Curl implements Generator {
     private static final Map<Endpoint.Verb, String> verbFlags = Collections.unmodifiableMap(Stream.of(
             new AbstractMap.SimpleEntry<>(Endpoint.Verb.GET, "--get "),
             new AbstractMap.SimpleEntry<>(Endpoint.Verb.POST, "-X POST "), // --data
@@ -25,6 +26,7 @@ public class Curl {
 
     private final Endpoint endpoint;
 
+    @Override
     public String generate() {
         return String.format("curl %s%s%s%s'%s'", auth(), verb(), queryParameters(), body(), endpoint.getUrl());
     }
