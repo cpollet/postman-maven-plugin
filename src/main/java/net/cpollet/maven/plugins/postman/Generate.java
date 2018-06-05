@@ -4,6 +4,7 @@ import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import net.cpollet.maven.plugins.postman.backend.adapters.ClassAdapter;
 import net.cpollet.maven.plugins.postman.frontend.api.Endpoint;
 import net.cpollet.maven.plugins.postman.frontend.curl.Curl;
+import net.cpollet.maven.plugins.postman.frontend.postman.Postman;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -74,6 +75,10 @@ public class Generate extends AbstractMojo {
         endpoints.stream()
                 .map(Curl::new)
                 .forEach(c -> getLog().info(c.generate()));
+
+        getLog().info(
+                new Postman(finalName, endpoints).generate()
+        );
     }
 
     private ClassLoader classLoader(File jarFile) {
