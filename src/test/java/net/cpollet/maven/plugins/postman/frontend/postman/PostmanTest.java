@@ -166,35 +166,12 @@ public class PostmanTest {
 
         // THEN
         Assertions.assertThat(result)
-        .contains("\"auth\" : {")
+                .contains("\"auth\" : {")
                 .contains("\"type\" : \"basic\"")
                 .contains("\"key\" : \"username\"")
                 .contains("\"value\" : \"username\"")
                 .contains("\"key\" : \"password\"")
                 .contains("\"value\" : \"password\"");
-    }
-
-    @Test
-    public void generate_endpoint() {
-        // GIVEN
-        Endpoint endpoint = new Endpoint(
-                "endpointName",
-                Endpoint.Verb.GET,
-                "/path",
-                BodyPayload.class,
-                Arrays.asList("param1", "param2"),
-                Void.class
-        )
-                .withBaseUrl("base")
-                .withAuthentication("username", "password");
-
-        Postman postman = new Postman("collectionName", Collections.singletonList(endpoint));
-
-        // WHEN
-        String result = postman.generate();
-
-        // THEN
-        Assertions.assertThat(result);
     }
 
     @Data
