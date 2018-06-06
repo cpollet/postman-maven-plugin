@@ -3,7 +3,6 @@ package net.cpollet.maven.plugins.postman;
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import net.cpollet.maven.plugins.postman.backend.adapters.ClassAdapter;
 import net.cpollet.maven.plugins.postman.frontend.api.Endpoint;
-import net.cpollet.maven.plugins.postman.frontend.curl.Curl;
 import net.cpollet.maven.plugins.postman.frontend.postman.Postman;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -13,9 +12,12 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 import javax.ws.rs.Path;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,32 +55,29 @@ public class Generate extends AbstractMojo {
 
         getLog().debug(String.format("Final name: %s/%s.%s", directory, finalName, packaging));
 
-        ClassLoader classLoader = classLoader(jarFile);
-
-        List<Class<?>> classesToScan = new ArrayList<>();
-
-        new FastClasspathScanner(packagesToScan)
-                //.verbose()
-                .overrideClassLoaders(classLoader)
-                .matchClassesWithAnnotation(Path.class, classesToScan::add)
-                .scan();
-
-        List<Endpoint> endpoints = classesToScan.stream()
+        List<Endpoint> endpoints = getClassesToScan(classLoader(jarFile)).stream()
                 .map(c -> new ClassAdapter(c).getEndpoints())
                 .flatMap(List::stream)
                 .map(e -> e.withBaseUrl(baseUrl))
                 .map(e -> e.withAuthentication(basicAuth.getUsername(), basicAuth.getPassword()))
                 .collect(Collectors.toList());
 
-        endpoints.forEach(e -> getLog().info(e.toString()));
+        File destinationFile = new File(String.format("%s/%s.json", directory, finalName));
+        String result = new Postman(finalName, endpoints).generate();
 
-        endpoints.stream()
-                .map(Curl::new)
-                .forEach(c -> getLog().info(c.generate()));
-
-        getLog().info(
-                new Postman(finalName, endpoints).generate()
-        );
+        try {
+            Files.write(
+                    destinationFile.toPath(),
+                    result.getBytes(),
+                    new StandardOpenOption[]{
+                            StandardOpenOption.CREATE,
+                            StandardOpenOption.TRUNCATE_EXISTING,
+                            StandardOpenOption.WRITE
+                    }
+            );
+        } catch (IOException e) {
+            throw new MojoExecutionException("Unable to write to " + destinationFile.getAbsolutePath(), e);
+        }
     }
 
     private ClassLoader classLoader(File jarFile) {
@@ -88,5 +87,16 @@ public class Generate extends AbstractMojo {
             // should never happen
             throw new RuntimeException(e);
         }
+    }
+
+    private List<Class<?>> getClassesToScan(ClassLoader classLoader) {
+        List<Class<?>> classesToScan = new ArrayList<>();
+
+        new FastClasspathScanner(packagesToScan)
+                .overrideClassLoaders(classLoader)
+                .matchClassesWithAnnotation(Path.class, classesToScan::add)
+                .scan();
+
+        return classesToScan;
     }
 }
