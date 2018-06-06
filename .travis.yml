@@ -1,4 +1,8 @@
 language: java
+#sudo: required
+
+#services:
+#  - docker
 
 jdk:
   - oraclejdk8
@@ -8,7 +12,8 @@ cache:
     - $HOME/.m2
     - $HOME/.sonar/cache
 
-install: true
+install:
+  - cd newman-assert && ./build.sh
 
 addons:
   sonarqube:
@@ -17,7 +22,7 @@ addons:
       secure: $SONARQUBE_TOKEN
 
 script:
-  - mvn jacoco:prepare-agent verify sonar:sonar
+  - mvn install sonar:sonar -P run-its
 
 branches:
   only:
