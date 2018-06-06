@@ -14,7 +14,7 @@ import java.util.List;
 public class Collection {
     private Information info;
 
-    @Singular
-    private List<ItemOrFolder> items;
+    @Singular("item")
+    private List<ItemOrFolder> item;
 }
 

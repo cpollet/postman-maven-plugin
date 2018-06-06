@@ -46,7 +46,7 @@ public class Postman implements Generator {
                 .info(Information.builder()
                         .name(collectionName)
                         .build())
-                .items(
+                .item(
                         endpoints.stream()
                                 .map(e -> Item.builder()
                                         .name(e.getName())
