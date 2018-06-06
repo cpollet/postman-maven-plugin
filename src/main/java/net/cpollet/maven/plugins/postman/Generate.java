@@ -17,6 +17,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,12 +70,9 @@ public class Generate extends AbstractMojo {
             Files.write(
                     destinationFile.toPath(),
                     result.getBytes(),
-                    new StandardOpenOption[]{
-                            StandardOpenOption.CREATE,
-                            StandardOpenOption.TRUNCATE_EXISTING,
-                            StandardOpenOption.WRITE
-                    }
-            );
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING,
+                    StandardOpenOption.WRITE);
         } catch (IOException e) {
             throw new MojoExecutionException("Unable to write to " + destinationFile.getAbsolutePath(), e);
         }
