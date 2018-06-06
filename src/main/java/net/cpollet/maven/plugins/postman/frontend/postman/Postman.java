@@ -9,6 +9,7 @@ import net.cpollet.maven.plugins.postman.frontend.api.Endpoint;
 import net.cpollet.maven.plugins.postman.frontend.postman.data.Auth;
 import net.cpollet.maven.plugins.postman.frontend.postman.data.BasicAuthPassword;
 import net.cpollet.maven.plugins.postman.frontend.postman.data.BasicAuthUsername;
+import net.cpollet.maven.plugins.postman.frontend.postman.data.Body;
 import net.cpollet.maven.plugins.postman.frontend.postman.data.Collection;
 import net.cpollet.maven.plugins.postman.frontend.postman.data.Information;
 import net.cpollet.maven.plugins.postman.frontend.postman.data.Item;
@@ -52,7 +53,9 @@ public class Postman implements Generator {
                                         .request(Request.builder()
                                                 .url(url(e))
                                                 .method(methods.get(e.getVerb()))
-                                                .body(JsonExample.from(e.getBodyType()).generate())
+                                                .body(Body.builder()
+                                                        .raw(JsonExample.from(e.getBodyType()).generate())
+                                                        .build())
                                                 .auth(Auth.builder()
                                                         .basic(Arrays.asList(
                                                                 BasicAuthUsername.builder().value(e.getUsername()).build(),

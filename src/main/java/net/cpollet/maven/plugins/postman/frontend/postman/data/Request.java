@@ -9,7 +9,7 @@ public class Request {
     private String url;
     private Auth auth;
     private Method method;
-    private Object body;
+    private Body body;
 
     public enum Method {
         GET, PUT, POST, PATCH, DELETE, HEAD, OPTIONS;

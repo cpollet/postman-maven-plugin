@@ -121,7 +121,9 @@ public class PostmanTest {
 
         // THEN
         Assertions.assertThat(result)
-                .contains("\"body\" : \"{\\n  \\\"username\\\": \\\"string\\\",\\n  \\\"password\\\": \\\"string\\\"\\n}\"");
+                .contains("\"body\" : {")
+                .contains("\"mode\" : \"raw\"")
+                .contains("\"raw\" : \"{\\n  \\\"username\\\": \\\"string\\\",\\n  \\\"password\\\": \\\"string\\\"\\n}\"");
     }
 
     @Test
