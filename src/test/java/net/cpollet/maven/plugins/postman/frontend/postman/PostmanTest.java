@@ -1,0 +1,205 @@
+package net.cpollet.maven.plugins.postman.frontend.postman;
+
+import lombok.Data;
+import net.cpollet.maven.plugins.postman.frontend.api.Endpoint;
+import org.assertj.core.api.Assertions;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Collections;
+
+public class PostmanTest {
+    @Test
+    public void generate_schema() {
+        // GIVEN
+        Postman postman = new Postman("collectionName", Collections.emptyList());
+
+        // WHEN
+        String result = postman.generate();
+
+        // THEN
+        Assertions.assertThat(result)
+                .contains("\"schema\" : \"https://schema.getpostman.com/json/collection/v2.1.0/collection.json\"");
+    }
+
+    @Test
+    public void generate_collectionName() {
+        // GIVEN
+        Postman postman = new Postman("collectionName", Collections.emptyList());
+
+        // WHEN
+        String result = postman.generate();
+
+        // THEN
+        Assertions.assertThat(result)
+                .contains("\"name\" : \"collectionName\"");
+    }
+
+    @Test
+    public void generate_endpointName() {
+        // GIVEN
+        Endpoint endpoint = new Endpoint(
+                "endpointName",
+                null,
+                null,
+                Void.class,
+                Collections.emptyList(),
+                Void.class
+        );
+
+        Postman postman = new Postman("collectionName", Collections.singletonList(endpoint));
+
+        // WHEN
+        String result = postman.generate();
+
+        // THEN
+        Assertions.assertThat(result)
+                .contains("\"name\" : \"endpointName\"");
+    }
+
+    @Test
+    public void generate_endpointUrl() {
+        // GIVEN
+        Endpoint endpoint = new Endpoint(
+                null,
+                null,
+                "/path",
+                Void.class,
+                Collections.emptyList(),
+                Void.class
+        )
+                .withBaseUrl("base");
+
+        Postman postman = new Postman("collectionName", Collections.singletonList(endpoint));
+
+        // WHEN
+        String result = postman.generate();
+
+        // THEN
+        Assertions.assertThat(result)
+                .contains("\"url\" : \"base/path\"");
+    }
+
+    @Test
+    public void generate_endpointMethod() {
+        // GIVEN
+        Endpoint endpoint = new Endpoint(
+                null,
+                Endpoint.Verb.GET,
+                null,
+                Void.class,
+                Collections.emptyList(),
+                Void.class
+        );
+
+        Postman postman = new Postman("collectionName", Collections.singletonList(endpoint));
+
+        // WHEN
+        String result = postman.generate();
+
+        // THEN
+        Assertions.assertThat(result)
+                .contains("\"method\" : \"GET\"");
+    }
+
+    @Test
+    public void generate_endpointPayload() {
+        // GIVEN
+        Endpoint endpoint = new Endpoint(
+                null,
+                null,
+                null,
+                BodyPayload.class,
+                Collections.emptyList(),
+                Void.class
+        );
+
+        Postman postman = new Postman("collectionName", Collections.singletonList(endpoint));
+
+        // WHEN
+        String result = postman.generate();
+
+        // THEN
+        Assertions.assertThat(result)
+                .contains("\"body\" : \"{\\n  \\\"username\\\": \\\"string\\\",\\n  \\\"password\\\": \\\"string\\\"\\n}\"");
+    }
+
+    @Test
+    public void generate_endpointGetParameters() {
+        // GIVEN
+        Endpoint endpoint = new Endpoint(
+                null,
+                null,
+                "path",
+                Void.class,
+                Arrays.asList("param1", "param2"),
+                Void.class
+        );
+
+        Postman postman = new Postman("collectionName", Collections.singletonList(endpoint));
+
+        // WHEN
+        String result = postman.generate();
+
+        // THEN
+        Assertions.assertThat(result)
+                .contains("path?param1=...&param2=...");
+    }
+
+    @Test
+    public void generate_endpointBasicAuth() {
+        // GIVEN
+        Endpoint endpoint = new Endpoint(
+                null,
+                null,
+                null,
+                Void.class,
+                Collections.emptyList(),
+                Void.class
+        )
+                .withAuthentication("username", "password");
+
+        Postman postman = new Postman("collectionName", Collections.singletonList(endpoint));
+
+        // WHEN
+        String result = postman.generate();
+
+        // THEN
+        Assertions.assertThat(result)
+        .contains("\"auth\" : {")
+                .contains("\"type\" : \"basic\"")
+                .contains("\"key\" : \"username\"")
+                .contains("\"value\" : \"username\"")
+                .contains("\"key\" : \"password\"")
+                .contains("\"value\" : \"password\"");
+    }
+
+    @Test
+    public void generate_endpoint() {
+        // GIVEN
+        Endpoint endpoint = new Endpoint(
+                "endpointName",
+                Endpoint.Verb.GET,
+                "/path",
+                BodyPayload.class,
+                Arrays.asList("param1", "param2"),
+                Void.class
+        )
+                .withBaseUrl("base")
+                .withAuthentication("username", "password");
+
+        Postman postman = new Postman("collectionName", Collections.singletonList(endpoint));
+
+        // WHEN
+        String result = postman.generate();
+
+        // THEN
+        Assertions.assertThat(result);
+    }
+
+    @Data
+    public static class BodyPayload {
+        private String username;
+        private String password;
+    }
+}

@@ -50,7 +50,7 @@ public class Postman implements Generator {
                                 .map(e -> Item.builder()
                                         .name(e.getName())
                                         .request(Request.builder()
-                                                .url(e.getUrl())
+                                                .url(url(e))
                                                 .method(methods.get(e.getVerb()))
                                                 .body(JsonExample.from(e.getBodyType()).generate())
                                                 .auth(Auth.builder()
@@ -70,5 +70,20 @@ public class Postman implements Generator {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String url(Endpoint e) {
+        if (e.getQueryParametersNames().isEmpty()) {
+            return e.getUrl();
+        }
+
+        String parameters = String.join("&",
+                e.getQueryParametersNames().stream()
+                        .map(s -> String.format("%s=...", s))
+                        .collect(Collectors.toList())
+        );
+
+
+        return String.format("%s?%s", e.getUrl(), parameters);
     }
 }
