@@ -13,10 +13,10 @@ cache:
     - $HOME/.sonar/cache
 
 install:
-  - cd newman-assert && ./build.sh
+  - cd newman-assert && ./build.sh && cd ..
 
 addons:
-  sonarqube:
+  sonarcloud:
     organization: "cpollet-github"
     token:
       secure: $SONARQUBE_TOKEN
