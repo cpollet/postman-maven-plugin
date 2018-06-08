@@ -1,7 +1,7 @@
 // import java.util.regex.Pattern
 
-File collectionFile = new File(basedir, "target/simple-it-version.json");
+File collectionFile = new File(basedir, "target/basic-version.json");
 
 assert collectionFile.isFile()
 
-new File(basedir, 'target/simple-it-version.result').text == "0"
+new File(basedir, 'target/basic-version.result').text == "0"

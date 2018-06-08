@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>classpath-dependency</artifactId>
+
+    <parent>
+        <groupId>net.cpollet.maven.plugins.it</groupId>
+        <artifactId>classpath</artifactId>
+        <version>version</version>
+        <relativePath>..</relativePath>
+    </parent>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <docker.container.wiremock.name>${project.groupId}_${project.artifactId}_wiremock
+        </docker.container.wiremock.name>
+        <docker.container.newman.name>${project.groupId}_${project.artifactId}_newman</docker.container.newman.name>
+        <docker.network.name>${project.groupId}_${project.artifactId}</docker.network.name>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.google.collections</groupId>
+            <artifactId>google-collections</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>
