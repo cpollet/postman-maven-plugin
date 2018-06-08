@@ -95,7 +95,7 @@ public class JsonExample {
                 JsonExample content = child(((ArraySchema.SingleItems) items).getSchema());
 
                 return indent(
-                        String.join("\n",
+                        String.join(System.lineSeparator(),
                                 "[", // already indented by default
                                 content.generate(),
                                 indent("]")
@@ -122,9 +122,9 @@ public class JsonExample {
                     .map(s -> indent(s, 1))
                     .collect(Collectors.toList());
 
-            return String.format("%s\n%s\n%s",
+            return String.format("%s%n%s%n%s",
                     indent("{"),
-                    String.join(",\n", props),
+                    String.join("," + System.lineSeparator(), props),
                     indent("}"));
         }
 
