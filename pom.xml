@@ -231,7 +231,7 @@
                                     <goal>install</goal>
                                     <goal>run</goal>
                                 </goals>
-                            <execution>
+                            </execution>
                         </executions>
                     </plugin>
                 </plugins>
