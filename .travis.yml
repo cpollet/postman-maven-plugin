@@ -24,6 +24,11 @@ addons:
 script:
   - mvn install sonar:sonar -P run-its
 
+after_failure:
+  - cat target/it/interpolated-settings.xml
+  - cat target/it/simple-it/build.log
+  - cat target/it/simple-it/target/*.{result,json}
+
 branches:
   only:
     - master
