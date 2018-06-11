@@ -36,9 +36,6 @@
                 <artifactId>@project.artifactId@</artifactId>
                 <version>@project.version@</version>
                 <configuration>
-                    <packagesToScan>
-                        <value>net.cpollet.maven.plugins.postman.it.api</value>
-                    </packagesToScan>
                     <baseUrl>http://${docker.container.wiremock.name}:8080</baseUrl>
                 </configuration>
                 <executions>

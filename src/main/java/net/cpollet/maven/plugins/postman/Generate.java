@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
         requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME,
         requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class Generate extends AbstractMojo {
-    @Parameter(defaultValue = "${project.runtimeClasspathElements}", readonly = true, required = true)
+    @Parameter(property = "project.runtimeClasspathElements", readonly = true, required = true)
     private List<String> compilePath;
 
     @Parameter(property = "project.build.finalName", required = true, readonly = true)
@@ -39,13 +39,13 @@ public class Generate extends AbstractMojo {
     @Parameter(property = "project.packaging", required = true, readonly = true)
     private String packaging;
 
-    @Parameter(name = "packagesToScan", required = true)
+    @Parameter(name = "packagesToScan", defaultValue = "${postman.packagesToScan}", readonly = true)
     private String[] packagesToScan;
 
-    @Parameter(name = "baseUrl")
-    private String baseUrl;
+    @Parameter(name = "baseUrl", defaultValue = "${postman.baseUrl}", required = true, readonly = true)
+    private URL baseUrl;
 
-    @Parameter(name = "basicAuth")
+    @Parameter(name = "basicAuth", defaultValue = "${postman.basicAuth}")
     private BasicAuth basicAuth;
 
     public void execute() throws MojoExecutionException {
@@ -59,12 +59,15 @@ public class Generate extends AbstractMojo {
             throw new MojoExecutionException(String.format("File %s does not exist", jarFile.getAbsolutePath()));
         }
 
+        getLog().debug(String.format("Classpath: %s", String.join(", ", compilePath)));
+        getLog().debug(String.format("Scan packages: %s", String.join(", ", packagesToScan)));
+        getLog().debug(String.format("Base URL: %s", baseUrl));
         getLog().debug(String.format("Final name: %s/%s.%s", directory, finalName, packaging));
 
         List<Endpoint> endpoints = getClassesToScan(classLoader(jarFile)).stream()
                 .map(c -> new ClassAdapter(c).getEndpoints())
                 .flatMap(List::stream)
-                .map(e -> e.withBaseUrl(baseUrl))
+                .map(e -> e.withBaseUrl(baseUrl.toString()))
                 .map(e -> e.withAuthentication(basicAuth.getUsername(), basicAuth.getPassword()))
                 .collect(Collectors.toList());
 
