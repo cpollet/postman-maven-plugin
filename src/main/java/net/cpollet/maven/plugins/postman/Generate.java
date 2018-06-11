@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Generates a postman collection in project build directory.
+ */
 @Mojo(name = "generate", defaultPhase = LifecyclePhase.PACKAGE,
         requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME,
         requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
@@ -39,12 +42,22 @@ public class Generate extends AbstractMojo {
     @Parameter(property = "project.packaging", required = true, readonly = true)
     private String packaging;
 
-    @Parameter(name = "packagesToScan", defaultValue = "${postman.packagesToScan}", readonly = true)
+    /**
+     * List of packages to scan. If not provided, the whole artifact is scanned.
+     */
+    @Parameter(name = "packagesToScan", defaultValue = "${postman.packagesToScan}")
     private String[] packagesToScan;
 
-    @Parameter(name = "baseUrl", defaultValue = "${postman.baseUrl}", required = true, readonly = true)
+    /**
+     * The base URL to use when generating the postman collections. This has to be a valid URL.
+     */
+    @Parameter(name = "baseUrl", defaultValue = "${postman.baseUrl}", required = true)
     private URL baseUrl;
 
+    /**
+     * The basic auth username and password to use, if any. It contains two fields, <code>username</code> and
+     * <code>password</code> (see {@link BasicAuth}).
+     */
     @Parameter(name = "basicAuth", defaultValue = "${postman.basicAuth}")
     private BasicAuth basicAuth;
 
