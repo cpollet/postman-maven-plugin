@@ -103,6 +103,29 @@ public class PostmanTest {
     }
 
     @Test
+    public void generate_contentType() {
+        // GIVEN
+        Endpoint endpoint = new Endpoint(
+                "endpointName",
+                null,
+                null,
+                Void.class,
+                Collections.emptyList(),
+                Void.class
+        );
+
+        Postman postman = new Postman("collectionName", Collections.singletonList(endpoint));
+
+        // WHEN
+        String result = postman.generate();
+
+        // THEN
+        Assertions.assertThat(result)
+                .contains("\"key\" : \"Content-Type\"")
+                .contains("\"value\" : \"application/json\"");
+    }
+
+    @Test
     public void generate_endpointPayload() {
         // GIVEN
         Endpoint endpoint = new Endpoint(
