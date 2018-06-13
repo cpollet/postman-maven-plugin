@@ -1,0 +1,10 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/api/public/groups"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "ok.json"
+  }
+}
