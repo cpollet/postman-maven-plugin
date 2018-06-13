@@ -47,5 +47,25 @@ The plugin is bound to the ```package``` phase by default. The CLI equivalent XM
 ```
 
 # Build
-Before building, make sure you have the ```newman-assert``` docker image (run ```build.sh``` script from ```newman-assert``` folder)
-```$ mvn clean install -Prun-its```
+```
+$ mvn clean install
+```
+
+Tu run the integration tests, use the ```run-its``` profile. Make sure you have the ```newman-assert``` docker image (run ```build.sh``` script from ```newman-assert``` folder)
+```
+$ mvn clean install -Prun-its 
+```
+
+# Deploy snapshot
+```
+$ mvn clean deploy -Prelease
+```
+
+# Release & Deploy
+```
+$ mvn release:clean release:prepare
+$ mvn release:perform
+... check nexus staging ...
+$ cd target/checkout
+$ mvn nexus-staging:release
+```
