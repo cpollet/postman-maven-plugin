@@ -25,25 +25,30 @@ $ mvn postman:generate -Dpostman.packagesToScan=a,b \
 ## pom.xml
 The plugin is bound to the ```package``` phase by default. The CLI equivalent XML configuration is:
 ```
-<configuration>
-    <packagesToScan>
-        <value>a</value>
-        <value>b</value>
-    </packagesToScan>
-    <baseUrl>http://localhost</baseUrl>
-    <basicAuth>
-        <username>username</username>
-        <password>password</password>
-    </basicAuth>
-</configuration>
-<executions>
-    <execution>
-        <id>generate-postman</id>
-        <goals>
-            <goal>generate</goal>
-        </goals>
-    </execution>
-</executions>
+<plugin>
+    <groupId>net.cpollet.maven.plugins</groupId>
+    <artifactId>postman-maven-plugin</artifactId>
+    <version>...</version>
+    <configuration>
+        <packagesToScan>
+            <value>a</value>
+            <value>b</value>
+        </packagesToScan>
+        <baseUrl>http://localhost</baseUrl>
+        <basicAuth>
+            <username>username</username>
+            <password>password</password>
+        </basicAuth>
+    </configuration>
+    <executions>
+        <execution>
+            <id>generate-postman</id>
+            <goals>
+                <goal>generate</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
 ```
 
 # Build
@@ -58,6 +63,7 @@ $ mvn clean install -Prun-its
 
 # Deploy snapshot
 ```
+$ export GPG_TTY=$(tty)
 $ mvn clean deploy -Prelease
 ```
 
