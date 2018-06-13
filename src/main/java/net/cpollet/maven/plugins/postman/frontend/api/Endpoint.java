@@ -10,6 +10,7 @@ import java.util.List;
 @ToString
 @Getter
 public class Endpoint {
+    private final String group;
     private final String name;
     private final Verb verb;
     private final String path;
@@ -20,8 +21,8 @@ public class Endpoint {
     private final String username;
     private final String password;
 
-    public Endpoint(String name, Verb verb, String path, Class bodyType, List<String> queryParametersNames, Class responseType) {
-        this(name, verb, path, bodyType, queryParametersNames, responseType, "", "", "");
+    public Endpoint(String group, String name, Verb verb, String path, Class bodyType, List<String> queryParametersNames, Class responseType) {
+        this(group, name, verb, path, bodyType, queryParametersNames, responseType, "", "", "");
     }
 
     public Endpoint withBaseUrl(String baseUrl) {
@@ -29,11 +30,11 @@ public class Endpoint {
             return this;
         }
 
-        return new Endpoint(name, verb, path, bodyType, queryParametersNames, responseType, removeTrailingSlashes(baseUrl), username, password);
+        return new Endpoint(group, name, verb, path, bodyType, queryParametersNames, responseType, removeTrailingSlashes(baseUrl), username, password);
     }
 
     public Endpoint withAuthentication(String username, String password) {
-        return new Endpoint(name, verb, path, bodyType, queryParametersNames, responseType, base, username, password);
+        return new Endpoint(group, name, verb, path, bodyType, queryParametersNames, responseType, base, username, password);
     }
 
     private String removeTrailingSlashes(String path) {
@@ -46,6 +47,14 @@ public class Endpoint {
 
     public String getUrl() {
         return base + path;
+    }
+
+    public String getGroup() {
+        if (group == null) {
+            return "__default";
+        }
+
+        return group;
     }
 
     public enum Verb {

@@ -48,6 +48,9 @@ public class ClassAdapterTest {
         Endpoint endpoint = adapter.getEndpoints().get(0);
 
         // THEN
+        Assertions.assertThat(endpoint.getGroup())
+                .isEqualTo("Rest");
+
         Assertions.assertThat(endpoint.getPath())
                 .isEqualTo("/index");
 

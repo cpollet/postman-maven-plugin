@@ -39,6 +39,7 @@ public class PostmanTest {
     public void generate_endpointName() {
         // GIVEN
         Endpoint endpoint = new Endpoint(
+                null,
                 "endpointName",
                 null,
                 null,
@@ -63,6 +64,7 @@ public class PostmanTest {
         Endpoint endpoint = new Endpoint(
                 null,
                 null,
+                null,
                 "/path",
                 Void.class,
                 Collections.emptyList(),
@@ -85,6 +87,7 @@ public class PostmanTest {
         // GIVEN
         Endpoint endpoint = new Endpoint(
                 null,
+                null,
                 Endpoint.Verb.GET,
                 null,
                 Void.class,
@@ -106,6 +109,7 @@ public class PostmanTest {
     public void generate_contentType() {
         // GIVEN
         Endpoint endpoint = new Endpoint(
+                null,
                 "endpointName",
                 null,
                 null,
@@ -132,6 +136,7 @@ public class PostmanTest {
                 null,
                 null,
                 null,
+                null,
                 BodyPayload.class,
                 Collections.emptyList(),
                 Void.class
@@ -155,6 +160,7 @@ public class PostmanTest {
         Endpoint endpoint = new Endpoint(
                 null,
                 null,
+                null,
                 "path",
                 Void.class,
                 Arrays.asList("param1", "param2"),
@@ -175,6 +181,7 @@ public class PostmanTest {
     public void generate_endpointBasicAuth() {
         // GIVEN
         Endpoint endpoint = new Endpoint(
+                null,
                 null,
                 null,
                 null,
