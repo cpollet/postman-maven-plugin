@@ -206,6 +206,30 @@ public class PostmanTest {
                 .contains("\"value\" : \"password\"");
     }
 
+    @Test
+    public void generate_endpointGroup() {
+        // GIVEN
+        Endpoint endpoint = new Endpoint(
+                null,
+                null,
+                null,
+                null,
+                Void.class,
+                Collections.emptyList(),
+                Void.class
+        )
+                .withAuthentication("username", "password");
+
+        Postman postman = new Postman("collectionName", Collections.singletonList(endpoint));
+
+        // WHEN
+        String result = postman.generate();
+
+        // THEN
+        Assertions.assertThat(result)
+                .contains("\"name\" : \"__default\"");
+    }
+
     @Data
     public static class BodyPayload {
         private String username;

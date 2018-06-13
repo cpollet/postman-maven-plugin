@@ -11,6 +11,7 @@ import net.cpollet.maven.plugins.postman.frontend.postman.data.BasicAuthPassword
 import net.cpollet.maven.plugins.postman.frontend.postman.data.BasicAuthUsername;
 import net.cpollet.maven.plugins.postman.frontend.postman.data.Body;
 import net.cpollet.maven.plugins.postman.frontend.postman.data.Collection;
+import net.cpollet.maven.plugins.postman.frontend.postman.data.Folder;
 import net.cpollet.maven.plugins.postman.frontend.postman.data.Header;
 import net.cpollet.maven.plugins.postman.frontend.postman.data.Information;
 import net.cpollet.maven.plugins.postman.frontend.postman.data.Item;
@@ -44,35 +45,8 @@ public class Postman implements Generator {
         ObjectMapper mapper = new ObjectMapper();
 
         Collection collection = Collection.builder()
-                .info(Information.builder()
-                        .name(collectionName)
-                        .build())
-                .item(
-                        endpoints.stream()
-                                .map(e -> Item.builder()
-                                        .name(e.getName())
-                                        .request(Request.builder()
-                                                .url(url(e))
-                                                .method(methods.get(e.getVerb()))
-                                                .body(Body.builder()
-                                                        .raw(JsonExample.from(e.getBodyType()).generate())
-                                                        .build())
-                                                .header(Collections.singletonList(
-                                                        Header.builder()
-                                                                .key("Content-Type")
-                                                                .value("application/json")
-                                                                .build()
-                                                ))
-                                                .auth(Auth.builder()
-                                                        .basic(Arrays.asList(
-                                                                BasicAuthUsername.builder().value(e.getUsername()).build(),
-                                                                BasicAuthPassword.builder().value(e.getPassword()).build()
-                                                        ))
-                                                        .build())
-                                                .build())
-                                        .build())
-                                .collect(Collectors.toList())
-                )
+                .info(information(collectionName))
+                .item(folders(endpoints))
                 .build();
 
         try {
@@ -80,6 +54,43 @@ public class Postman implements Generator {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private List<Folder> folders(List<Endpoint> endpoints) {
+        return endpoints.stream()
+                .collect(Collectors.groupingBy(Endpoint::getGroup))
+                .entrySet().stream()
+                .map(g -> Folder.builder()
+                        .name(g.getKey())
+                        .item(endpoints(g.getValue()))
+                        .build()
+                )
+                .collect(Collectors.toList());
+    }
+
+    private Information information(String collectionName) {
+        return Information.builder()
+                .name(collectionName)
+                .build();
+    }
+
+    private List<Item> endpoints(List<Endpoint> endpoints) {
+        return endpoints.stream()
+                .map(e -> Item.builder()
+                        .name(e.getName())
+                        .request(request(e))
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    private Request request(Endpoint e) {
+        return Request.builder()
+                .url(url(e))
+                .method(method(e))
+                .auth(auth(e))
+                .header(header())
+                .body(body(e))
+                .build();
     }
 
     private String url(Endpoint e) {
@@ -95,5 +106,33 @@ public class Postman implements Generator {
 
 
         return String.format("%s?%s", e.getUrl(), parameters);
+    }
+
+    private Request.Method method(Endpoint e) {
+        return methods.get(e.getVerb());
+    }
+
+    private Auth auth(Endpoint e) {
+        return Auth.builder()
+                .basic(Arrays.asList(
+                        BasicAuthUsername.builder().value(e.getUsername()).build(),
+                        BasicAuthPassword.builder().value(e.getPassword()).build()
+                ))
+                .build();
+    }
+
+    private List<Header> header() {
+        return Collections.singletonList(
+                Header.builder()
+                        .key("Content-Type")
+                        .value("application/json")
+                        .build()
+        );
+    }
+
+    private Body body(Endpoint e) {
+        return Body.builder()
+                .raw(JsonExample.from(e.getBodyType()).generate())
+                .build();
     }
 }
