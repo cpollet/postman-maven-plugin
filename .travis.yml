@@ -24,10 +24,14 @@ addons:
 script:
   - mvn install sonar:sonar -P run-its
 
+after_success:
+  - curl -s -d "chat_id=$TELEGRAM_CHAT_ID&text=postman-maven-plugin - success" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" &> /dev/null
+
 after_failure:
   - cat target/it/interpolated-settings.xml
   - cat target/it/simple-it/build.log
   - cat target/it/simple-it/target/*.{result,json}
+  - curl -s -d "chat_id=$TELEGRAM_CHAT_ID&text=postman-maven-plugin - failure" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" &> /dev/null
 
 branches:
   only:
