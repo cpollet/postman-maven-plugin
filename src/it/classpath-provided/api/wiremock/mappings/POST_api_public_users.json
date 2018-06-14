@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/api/public/users",
+    "bodyPatterns": [
+      {
+        "equalToJson": {
+          "username": "string",
+          "roles": [
+            "string"
+          ]
+        }
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "ok.json"
+  }
+}

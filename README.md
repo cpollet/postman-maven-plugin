@@ -58,7 +58,12 @@ The plugin is bound to the ```package``` phase by default. The CLI equivalent XM
 $ mvn clean install
 ```
 
-Tu run the integration tests, use the ```run-its``` profile. Make sure you have the ```newman-assert``` docker image (run ```build.sh``` script from ```newman-assert``` folder)
+Tu run the integration tests, use the ```run-its``` profile. Make sure you have the ```newman-assert``` and ```rodolpheche/wiremock``` docker images:
+```
+$ cd newman-assert && build.sh && cd ..
+$ docker pull rodolpheche/wiremock
+```
+Then, you can execute
 ```
 $ mvn clean install -Prun-its 
 ```

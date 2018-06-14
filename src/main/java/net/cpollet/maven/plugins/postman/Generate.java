@@ -106,7 +106,7 @@ public class Generate extends AbstractMojo {
 
         urls.add(0, url(jarFile.getAbsolutePath()));
 
-        return new URLClassLoader(urls.toArray(new URL[0]), getClass().getClassLoader());
+        return new URLClassLoader(urls.toArray(new URL[0]));
     }
 
     private URL url(String path) {

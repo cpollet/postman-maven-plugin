@@ -79,9 +79,10 @@
                         </goals>
                         <configuration>
                             <executable>docker</executable>
+                            <async>true</async>
+                            <asyncDestroyOnShutdown>true</asyncDestroyOnShutdown>
                             <arguments>
                                 <argument>run</argument>
-                                <argument>--detach</argument>
                                 <argument>--name</argument>
                                 <argument>${docker.container.wiremock.name}</argument>
                                 <argument>--rm</argument>
