@@ -1,6 +1,6 @@
 package net.cpollet.maven.plugins.postman;
 
-import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
+import net.cpollet.maven.plugins.postman.backend.ClassScanner;
 import net.cpollet.maven.plugins.postman.backend.adapters.ClassAdapter;
 import net.cpollet.maven.plugins.postman.frontend.api.Endpoint;
 import net.cpollet.maven.plugins.postman.frontend.postman.Postman;
@@ -11,15 +11,11 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
-import javax.ws.rs.Path;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,7 +41,7 @@ public class Generate extends AbstractMojo {
      * List of packages to scan. If not provided, the whole artifact is scanned.
      */
     @Parameter(name = "packagesToScan", defaultValue = "${postman.packagesToScan}")
-    private String[] packagesToScan;
+    private List<String> packagesToScan;
 
     /**
      * The base URL to use when generating the postman collections. This has to be a valid URL.
@@ -70,7 +66,7 @@ public class Generate extends AbstractMojo {
         getLog().debug(String.format("Base URL: %s", baseUrl));
         getLog().debug(String.format("Final name: %s/%s.%s", directory, finalName, packaging));
 
-        List<Class<?>> classesToScan = getClassesToScan(classLoader());
+        List<Class> classesToScan = new ClassScanner(compilePath, packagesToScan).find();
 
         getLog().debug(String.format("Classes to scan: %s", String.join(", ", classesToScan.stream()
                 .map(Class::getCanonicalName)
@@ -97,32 +93,5 @@ public class Generate extends AbstractMojo {
         } catch (IOException e) {
             throw new MojoExecutionException("Unable to write to " + destinationFile.getAbsolutePath(), e);
         }
-    }
-
-    private ClassLoader classLoader() {
-        URL[] urls = compilePath.stream()
-                .map(this::url)
-                .toArray(URL[]::new);
-
-        return new URLClassLoader(urls, getClass().getClassLoader());
-    }
-
-    private URL url(String path) {
-        try {
-            return new File(path).toURI().toURL();
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private List<Class<?>> getClassesToScan(ClassLoader classLoader) {
-        List<Class<?>> classesToScan = new ArrayList<>();
-
-        new FastClasspathScanner(packagesToScan)
-                .overrideClassLoaders(classLoader)
-                .matchClassesWithAnnotation(Path.class, classesToScan::add)
-                .scan();
-
-        return classesToScan;
     }
 }
