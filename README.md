@@ -20,7 +20,7 @@ $ mvn postman:generate -Dpostman.packagesToScan=a,b \
                        -Dpostman.basicAuth.password=password
 ```
 
-* ```postman.packagesToScan``` optional. Ff not set, the plugin will scan all packages;
+* ```postman.packagesToScan``` optional. If not set, the plugin will scan all packages;
 * ```postman.baseUrl``` mandatory. A valid URL that will be used as the base URL for all endpoints discovered;
 * ```postman.basicAuth.*``` optional.
 
