@@ -27,10 +27,9 @@ import java.util.stream.Collectors;
  * Generates a postman collection in project build directory.
  */
 @Mojo(name = "generate", defaultPhase = LifecyclePhase.PACKAGE,
-        requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME,
-        requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
+        requiresDependencyResolution = ResolutionScope.COMPILE)
 public class Generate extends AbstractMojo {
-    @Parameter(property = "project.runtimeClasspathElements", readonly = true, required = true)
+    @Parameter(property = "project.compileClasspathElements", readonly = true, required = true)
     private List<String> compilePath;
 
     @Parameter(property = "project.build.finalName", required = true, readonly = true)
@@ -66,18 +65,19 @@ public class Generate extends AbstractMojo {
             basicAuth = new BasicAuth();
         }
 
-        File jarFile = new File(String.format("%s/%s.%s", directory, finalName, packaging));
-
-        if (!jarFile.exists()) {
-            throw new MojoExecutionException(String.format("File %s does not exist", jarFile.getAbsolutePath()));
-        }
-
         getLog().debug(String.format("Classpath: %s", String.join(", ", compilePath)));
         getLog().debug(String.format("Scan packages: %s", String.join(", ", packagesToScan)));
         getLog().debug(String.format("Base URL: %s", baseUrl));
         getLog().debug(String.format("Final name: %s/%s.%s", directory, finalName, packaging));
 
-        List<Endpoint> endpoints = getClassesToScan(classLoader(jarFile)).stream()
+        List<Class<?>> classesToScan = getClassesToScan(classLoader());
+
+        getLog().debug(String.format("Classes to scan: %s", String.join(", ", classesToScan.stream()
+                .map(Class::getCanonicalName)
+                .collect(Collectors.toList())
+        )));
+
+        List<Endpoint> endpoints = classesToScan.stream()
                 .map(c -> new ClassAdapter(c).getEndpoints())
                 .flatMap(List::stream)
                 .map(e -> e.withBaseUrl(baseUrl.toString()))
@@ -99,14 +99,12 @@ public class Generate extends AbstractMojo {
         }
     }
 
-    private ClassLoader classLoader(File jarFile) {
-        List<URL> urls = compilePath.stream()
+    private ClassLoader classLoader() {
+        URL[] urls = compilePath.stream()
                 .map(this::url)
-                .collect(Collectors.toList());
+                .toArray(URL[]::new);
 
-        urls.add(0, url(jarFile.getAbsolutePath()));
-
-        return new URLClassLoader(urls.toArray(new URL[0]));
+        return new URLClassLoader(urls, getClass().getClassLoader());
     }
 
     private URL url(String path) {
