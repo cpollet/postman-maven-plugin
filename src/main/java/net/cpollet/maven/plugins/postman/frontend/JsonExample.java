@@ -65,7 +65,7 @@ public class JsonExample {
 
     public String generate() {
         if (schema.isAnySchema()) {
-            return indent("{}");
+            return outputObject(Collections.emptyMap());
         }
 
         if (schema.isNullSchema()) {
@@ -85,47 +85,11 @@ public class JsonExample {
         }
 
         if (schema.isArraySchema()) {
-            ArraySchema.Items items = ((ArraySchema) schema).getItems();
-
-            if (items == null) {
-                return indent("[]");
-            }
-
-            if (items.isSingleItems()) {
-                JsonExample content = child(((ArraySchema.SingleItems) items).getSchema());
-
-                return indent(
-                        String.join(System.lineSeparator(),
-                                "[", // already indented by default
-                                content.generate(),
-                                indent("]")
-                        )
-                );
-            }
-
-            throw new IllegalArgumentException(items.getClass().getCanonicalName() + " is not supported");
+            return outputArray(((ArraySchema) schema).getItems());
         }
 
         if (schema.isObjectSchema()) {
-            Map<String, JsonSchema> properties = ((ObjectSchema) schema).getProperties();
-
-            if (properties.isEmpty()) {
-                return "{}";
-            }
-
-            List<String> props = properties.entrySet().stream()
-                    .map(e -> String.format(
-                            "\"%s\": %s",
-                            e.getKey(),
-                            child(e.getValue()).generate().trim() // trim because it does not start on its own line
-                    ))
-                    .map(s -> indent(s, 1))
-                    .collect(Collectors.toList());
-
-            return String.format("%s%n%s%n%s",
-                    indent("{"),
-                    String.join("," + System.lineSeparator(), props),
-                    indent("}"));
+            return outputObject(((ObjectSchema) schema).getProperties());
         }
 
         if (!schema.get$ref().isEmpty()) {
@@ -139,6 +103,46 @@ public class JsonExample {
         }
 
         throw new IllegalArgumentException(schema.getClass().getCanonicalName() + " is not supported");
+    }
+
+    private String outputArray(ArraySchema.Items items) {
+        if (items == null) {
+            return indent("[]");
+        }
+
+        if (items.isSingleItems()) {
+            JsonExample content = child(((ArraySchema.SingleItems) items).getSchema());
+
+            return indent(
+                    String.join(System.lineSeparator(),
+                            "[", // already indented by default
+                            content.generate(),
+                            indent("]")
+                    )
+            );
+        }
+
+        throw new IllegalArgumentException(items.getClass().getCanonicalName() + " is not supported");
+    }
+
+    private String outputObject(Map<String, JsonSchema> properties) {
+        if (properties.isEmpty()) {
+            return "{}";
+        }
+
+        List<String> props = properties.entrySet().stream()
+                .map(e -> String.format(
+                        "\"%s\": %s",
+                        e.getKey(),
+                        child(e.getValue()).generate().trim() // trim because it does not start on its own line
+                ))
+                .map(s -> indent(s, 1))
+                .collect(Collectors.toList());
+
+        return String.format("%s%n%s%n%s",
+                indent("{"),
+                String.join("," + System.lineSeparator(), props),
+                indent("}"));
     }
 
     private JsonExample child(JsonSchema schema) {
