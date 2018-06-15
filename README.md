@@ -74,22 +74,27 @@ Tu run the integration tests, use the ```run-its``` profile. Make sure you have 
 $ cd newman-assert && build.sh && cd ..
 $ docker pull rodolpheche/wiremock
 ```
-Then, you can execute
+Then:
 ```
 $ mvn clean install -Prun-its 
 ```
 
-# Deploy snapshot
+# Release & Deploy
+When ```gpg: signing failed: Inappropriate ioctl for device```, executing ```export GPG_TTY=$(tty)``` might help.
+
+## Validating before tagging
+To validate the checks sonatype executes before tagging, update the ```pom.xml``` to remove the ```-SNAPSHOT```. Then, execute
 ```
-$ export GPG_TTY=$(tty)
 $ mvn clean deploy -Prelease
 ```
 
-# Release & Deploy
+## Actual release
 ```
-$ mvn release:clean release:prepare
+$ mvn clean release:clean release:prepare
 $ mvn release:perform
-... check nexus staging ...
+```
+Check staging repo. Then either release from web UI or
+```
 $ cd target/checkout
 $ mvn nexus-staging:release
 ```
