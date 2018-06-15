@@ -1,7 +1,7 @@
 package net.cpollet.maven.plugins.postman;
 
 import net.cpollet.maven.plugins.postman.backend.ClassScanner;
-import net.cpollet.maven.plugins.postman.backend.adapters.ClassAdapter;
+import net.cpollet.maven.plugins.postman.backend.adapters.ClassesAdapter;
 import net.cpollet.maven.plugins.postman.frontend.api.Endpoint;
 import net.cpollet.maven.plugins.postman.frontend.postman.Postman;
 import org.apache.maven.plugin.AbstractMojo;
@@ -61,28 +61,13 @@ public class Generate extends AbstractMojo {
             basicAuth = new BasicAuth();
         }
 
-        getLog().debug(String.format("Classpath: %s", String.join(", ", compilePath)));
-        getLog().debug(String.format("Scan packages: %s", String.join(", ", packagesToScan)));
-        getLog().debug(String.format("Base URL: %s", baseUrl));
-        getLog().debug(String.format("Final name: %s/%s.%s", directory, finalName, packaging));
+        List<Endpoint> endpoints = endpoints(
+                classesToScan()
+        );
 
-        List<Class> classesToScan = new ClassScanner(compilePath, packagesToScan).find();
-
-        getLog().debug(String.format("Classes to scan: %s", String.join(", ", classesToScan.stream()
-                .map(Class::getCanonicalName)
-                .collect(Collectors.toList())
-        )));
-
-        List<Endpoint> endpoints = classesToScan.stream()
-                .map(c -> new ClassAdapter(c).getEndpoints())
-                .flatMap(List::stream)
-                .map(e -> e.withBaseUrl(baseUrl.toString()))
-                .map(e -> e.withAuthentication(basicAuth.getUsername(), basicAuth.getPassword()))
-                .collect(Collectors.toList());
-
-        File destinationFile = new File(String.format("%s/%s.json", directory, finalName));
         String result = new Postman(finalName, endpoints).generate();
 
+        File destinationFile = new File(String.format("%s/%s.json", directory, finalName));
         try {
             Files.write(
                     destinationFile.toPath(),
@@ -93,5 +78,23 @@ public class Generate extends AbstractMojo {
         } catch (IOException e) {
             throw new MojoExecutionException("Unable to write to " + destinationFile.getAbsolutePath(), e);
         }
+    }
+
+    private List<Endpoint> endpoints(List<Class> classesToScan) {
+        return new ClassesAdapter(classesToScan).getEndpoints().stream()
+                .map(e -> e.withBaseUrl(baseUrl.toString()))
+                .map(e -> e.withAuthentication(basicAuth.getUsername(), basicAuth.getPassword()))
+                .collect(Collectors.toList());
+    }
+
+    private List<Class> classesToScan() {
+        List<Class> classesToScan = new ClassScanner(compilePath, packagesToScan).find();
+
+        getLog().debug(String.format("Classes to scan: %s", String.join(", ", classesToScan.stream()
+                .map(Class::getCanonicalName)
+                .collect(Collectors.toList())
+        )));
+
+        return classesToScan;
     }
 }
