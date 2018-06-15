@@ -6,6 +6,10 @@
 A maven plugin to export [JAX-RS](https://github.com/jax-rs) annotated classes and methods to [Postman collection](https://www.getpostman.com/collection).
 
 # Usage
+Requirements
+* Java 8+
+* Maven 3.5.0+
+
 ## CLI
 In you ```~/.m2/settings.xml``` file, add the following:
 ```
