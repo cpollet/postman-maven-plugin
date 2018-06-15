@@ -2,6 +2,7 @@ package net.cpollet.maven.plugins.postman;
 
 import net.cpollet.maven.plugins.postman.backend.ClassScanner;
 import net.cpollet.maven.plugins.postman.backend.adapters.ClassesAdapter;
+import net.cpollet.maven.plugins.postman.frontend.api.Context;
 import net.cpollet.maven.plugins.postman.frontend.api.Endpoint;
 import net.cpollet.maven.plugins.postman.frontend.postman.Postman;
 import org.apache.maven.plugin.AbstractMojo;
@@ -16,7 +17,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -24,7 +27,7 @@ import java.util.stream.Collectors;
  */
 @Mojo(name = "generate", defaultPhase = LifecyclePhase.PACKAGE,
         requiresDependencyResolution = ResolutionScope.COMPILE)
-public class Generate extends AbstractMojo {
+public class GenerateMojo extends AbstractMojo {
     @Parameter(property = "project.compileClasspathElements", readonly = true, required = true)
     private List<String> compilePath;
 
@@ -34,38 +37,39 @@ public class Generate extends AbstractMojo {
     @Parameter(property = "project.build.directory", required = true, readonly = true)
     private String directory;
 
-    @Parameter(property = "project.packaging", required = true, readonly = true)
-    private String packaging;
-
     /**
      * List of packages to scan. If not provided, the whole artifact is scanned.
      */
     @Parameter(name = "packagesToScan", defaultValue = "${postman.packagesToScan}")
     private List<String> packagesToScan;
 
-    /**
-     * The base URL to use when generating the postman collections. This has to be a valid URL.
-     */
-    @Parameter(name = "baseUrl", defaultValue = "${postman.baseUrl}", required = true)
+    @Parameter(name = "environments")
+    private List<Environment> environments;
+
+    @Parameter(defaultValue = "${postman.baseUrl}", readonly = true)
     private URL baseUrl;
 
-    /**
-     * The basic auth username and password to use, if any. It contains two fields, <code>username</code> and
-     * <code>password</code> (see {@link BasicAuth}).
-     */
-    @Parameter(name = "basicAuth", defaultValue = "${postman.basicAuth}")
-    private BasicAuth basicAuth;
+    @Parameter(defaultValue = "${postman.basicAuth.username}", readonly = true)
+    private String basicAuthUsername;
+
+    @Parameter(defaultValue = "${postman.basicAuth.password}", readonly = true)
+    private String basicAuthPassword;
 
     public void execute() throws MojoExecutionException {
-        if (basicAuth == null) {
-            basicAuth = new BasicAuth();
+        if (environments == null) {
+            environments = new ArrayList<>();
         }
 
-        List<Endpoint> endpoints = endpoints(
-                classesToScan()
-        );
+        if (environments.isEmpty()) {
+            environments.add(new Environment(null, baseUrl, new BasicAuth(basicAuthUsername, basicAuthPassword)));
+        }
 
-        String result = new Postman(finalName, endpoints).generate();
+        getLog().debug(String.join(", ", environments.stream().map(Environment::toString).collect(Collectors.toList())));
+
+        List<Endpoint> endpoints = new ClassesAdapter(classesToScan()).getEndpoints();
+        Map<String, Context> contexts = new EnvironmentsAdapter(environments).contexts();
+
+        String result = new Postman(finalName, endpoints, contexts).generate();
 
         File destinationFile = new File(String.format("%s/%s.json", directory, finalName));
         try {
@@ -78,13 +82,6 @@ public class Generate extends AbstractMojo {
         } catch (IOException e) {
             throw new MojoExecutionException("Unable to write to " + destinationFile.getAbsolutePath(), e);
         }
-    }
-
-    private List<Endpoint> endpoints(List<Class> classesToScan) {
-        return new ClassesAdapter(classesToScan).getEndpoints().stream()
-                .map(e -> e.withBaseUrl(baseUrl.toString()))
-                .map(e -> e.withAuthentication(basicAuth.getUsername(), basicAuth.getPassword()))
-                .collect(Collectors.toList());
     }
 
     private List<Class> classesToScan() {

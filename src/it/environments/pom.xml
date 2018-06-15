@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.cpollet.maven.plugins.it</groupId>
-    <artifactId>multi</artifactId>
+    <artifactId>environments</artifactId>
     <version>version</version>
 
     <properties>
@@ -36,9 +36,23 @@
                 <artifactId>@project.artifactId@</artifactId>
                 <version>@project.version@</version>
                 <configuration>
+                    <baseUrl>http://${docker.container.wiremock.name}:8080</baseUrl>
                     <environments>
                         <environment>
-                            <baseUrl>http://${docker.container.wiremock.name}:8080</baseUrl>
+                            <name>env0</name>
+                            <baseUrl>http://${docker.container.wiremock.name}:8080/env0</baseUrl>
+                            <basicAuth>
+                                <username>username0</username>
+                                <password>password0</password>
+                            </basicAuth>
+                        </environment>
+                        <environment>
+                            <name>env1</name>
+                            <baseUrl>http://${docker.container.wiremock.name}:8080/env1</baseUrl>
+                            <basicAuth>
+                                <username>username1</username>
+                                <password>password1</password>
+                            </basicAuth>
                         </environment>
                     </environments>
                 </configuration>

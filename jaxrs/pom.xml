@@ -1,0 +1,59 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>net.cpollet.examples</groupId>
+    <artifactId>jaxrs</artifactId>
+    <packaging>jar</packaging>
+    <version>version</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.20</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>config</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>net.cpollet.maven.plugins</groupId>
+                        <artifactId>postman-maven-plugin</artifactId>
+                        <version>1.0.0-SNAPSHOT</version>
+                        <configuration>
+                            <packagesToScan>
+                                <value>net.cpollet.examples.jaxrs</value>
+                            </packagesToScan>
+                            <environments>
+                                <environment>
+                                    <name>prod</name>
+                                    <baseUrl>https://reqres.in</baseUrl>
+                                </environment>
+                            </environments>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>generate-postman</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

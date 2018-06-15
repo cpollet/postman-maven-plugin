@@ -11,5 +11,5 @@ import java.util.List;
 public class Folder implements ItemOrFolder {
     private String name;
     @Singular("item")
-    private List<Item> item;
+    private List<ItemOrFolder> item;
 }

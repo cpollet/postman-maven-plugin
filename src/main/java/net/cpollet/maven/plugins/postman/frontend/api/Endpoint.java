@@ -3,6 +3,7 @@ package net.cpollet.maven.plugins.postman.frontend.api;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -10,6 +11,8 @@ import java.util.List;
 @ToString
 @Getter
 public class Endpoint {
+    private static final String SLASH = "/";
+
     private final String group;
     private final String name;
     private final Verb verb;
@@ -17,37 +20,6 @@ public class Endpoint {
     private final Class bodyType;
     private final List<String> queryParametersNames;
     private final Class responseType;
-    private final String base;
-    private final String username;
-    private final String password;
-
-    public Endpoint(String group, String name, Verb verb, String path, Class bodyType, List<String> queryParametersNames, Class responseType) {
-        this(group, name, verb, path, bodyType, queryParametersNames, responseType, "", "", "");
-    }
-
-    public Endpoint withBaseUrl(String baseUrl) {
-        if (baseUrl == null || baseUrl.isEmpty()) {
-            return this;
-        }
-
-        return new Endpoint(group, name, verb, path, bodyType, queryParametersNames, responseType, removeTrailingSlashes(baseUrl), username, password);
-    }
-
-    public Endpoint withAuthentication(String username, String password) {
-        return new Endpoint(group, name, verb, path, bodyType, queryParametersNames, responseType, base, username, password);
-    }
-
-    private String removeTrailingSlashes(String path) {
-        while (path.endsWith("/")) {
-            path = path.substring(0, path.length() - 1);
-        }
-
-        return path;
-    }
-
-    public String getUrl() {
-        return base + path;
-    }
 
     public String getGroup() {
         if (group == null) {
@@ -55,6 +27,19 @@ public class Endpoint {
         }
 
         return group;
+    }
+
+    /**
+     * Returns the path, starting with slash and finishing without slash
+     *
+     * @return the path
+     */
+    public String getPath() {
+        return SLASH + trimSlashes(path);
+    }
+
+    private String trimSlashes(String str) {
+        return StringUtils.stripEnd(StringUtils.stripStart(str, SLASH), SLASH);
     }
 
     public enum Verb {

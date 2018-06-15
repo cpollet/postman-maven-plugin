@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import net.cpollet.maven.plugins.postman.frontend.Generator;
 import net.cpollet.maven.plugins.postman.frontend.JsonExample;
+import net.cpollet.maven.plugins.postman.frontend.api.Context;
 import net.cpollet.maven.plugins.postman.frontend.api.Endpoint;
 import net.cpollet.maven.plugins.postman.frontend.postman.data.Auth;
 import net.cpollet.maven.plugins.postman.frontend.postman.data.BasicAuthPassword;
@@ -39,6 +40,7 @@ public class Postman implements Generator {
 
     private final String collectionName;
     private final List<Endpoint> endpoints;
+    private final Map<String, Context> contexts;
 
     @Override
     public String generate() {
@@ -46,7 +48,14 @@ public class Postman implements Generator {
 
         Collection collection = Collection.builder()
                 .info(information(collectionName))
-                .item(folders(endpoints))
+                .item(contexts.entrySet().stream()
+                        .map(c -> Folder.builder()
+                                .name(c.getKey())
+                                .item(folders(endpoints, c.getValue()))
+                                .build()
+                        )
+                        .collect(Collectors.toList())
+                )
                 .build();
 
         try {
@@ -56,13 +65,13 @@ public class Postman implements Generator {
         }
     }
 
-    private List<Folder> folders(List<Endpoint> endpoints) {
+    private List<Folder> folders(List<Endpoint> endpoints, Context c) {
         return endpoints.stream()
                 .collect(Collectors.groupingBy(Endpoint::getGroup))
                 .entrySet().stream()
                 .map(g -> Folder.builder()
                         .name(g.getKey())
-                        .item(endpoints(g.getValue()))
+                        .item(endpoints(g.getValue(), c))
                         .build()
                 )
                 .collect(Collectors.toList());
@@ -74,28 +83,28 @@ public class Postman implements Generator {
                 .build();
     }
 
-    private List<Item> endpoints(List<Endpoint> endpoints) {
+    private List<Item> endpoints(List<Endpoint> endpoints, Context c) {
         return endpoints.stream()
                 .map(e -> Item.builder()
                         .name(e.getName())
-                        .request(request(e))
+                        .request(request(e, c))
                         .build())
                 .collect(Collectors.toList());
     }
 
-    private Request request(Endpoint e) {
+    private Request request(Endpoint e, Context c) {
         return Request.builder()
-                .url(url(e))
+                .url(url(e, c))
                 .method(method(e))
-                .auth(auth(e))
+                .auth(auth(c))
                 .header(header())
                 .body(body(e))
                 .build();
     }
 
-    private String url(Endpoint e) {
+    private String url(Endpoint e, Context c) {
         if (e.getQueryParametersNames().isEmpty()) {
-            return e.getUrl();
+            return c.getBaseUrl() + e.getPath();
         }
 
         String parameters = String.join("&",
@@ -104,19 +113,18 @@ public class Postman implements Generator {
                         .collect(Collectors.toList())
         );
 
-
-        return String.format("%s?%s", e.getUrl(), parameters);
+        return String.format("%s?%s", c.getBaseUrl() + e.getPath(), parameters);
     }
 
     private Request.Method method(Endpoint e) {
         return methods.get(e.getVerb());
     }
 
-    private Auth auth(Endpoint e) {
+    private Auth auth(Context c) {
         return Auth.builder()
                 .basic(Arrays.asList(
-                        BasicAuthUsername.builder().value(e.getUsername()).build(),
-                        BasicAuthPassword.builder().value(e.getPassword()).build()
+                        BasicAuthUsername.builder().value(c.getUsername()).build(),
+                        BasicAuthPassword.builder().value(c.getPassword()).build()
                 ))
                 .build();
     }

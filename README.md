@@ -1,7 +1,9 @@
-[![Build Status](https://travis-ci.org/cpollet/postman-maven-plugin.svg?branch=master)](https://travis-ci.org/cpollet/postman-maven-plugin) [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=net.cpollet.maven.plugins%3Apostman-maven-plugin&metric=alert_status)](https://sonarcloud.io/dashboard?id=net.cpollet.maven.plugins%3Apostman-maven-plugin)
+[![Build Status](https://travis-ci.org/cpollet/postman-maven-plugin.svg?branch=master)](https://travis-ci.org/cpollet/postman-maven-plugin)
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=net.cpollet.maven.plugins%3Apostman-maven-plugin&metric=alert_status)](https://sonarcloud.io/dashboard?id=net.cpollet.maven.plugins%3Apostman-maven-plugin)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/net.cpollet.maven.plugins/postman-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.cpollet.maven.plugins/postman-maven-plugin)
 
 # Postman Maven Plugin
-A maven plugin to export JAX-RS annotated classes and methods to Postman collection.
+A maven plugin to export [JAX-RS](https://github.com/jax-rs) annotated classes and methods to [Postman collection](https://www.getpostman.com/collection).
 
 # Usage
 ## CLI
@@ -12,39 +14,47 @@ In you ```~/.m2/settings.xml``` file, add the following:
 </pluginGroups>
 ```
 
-Then, you can use
+Then, to generates a file ```${project.artifactId}-${project.version}.json``` containing the postman collection in the ```target``` folder:
 ```
-$ mvn postman:generate -Dpostman.packagesToScan=a,b \
+$ mvn postman:generate -Dpostman.packagesToScan=net.cpollet \
                        -Dpostman.baseUrl=http://localhost \
                        -Dpostman.basicAuth.username=username \
                        -Dpostman.basicAuth.password=password
 ```
+You can execute this command from the ```jaxrs``` folder for instance.
 
+* ```postman.baseUrl``` mandatory. A valid URL that will be used as the base URL for all discovered endpoints;
 * ```postman.packagesToScan``` optional. If not set, the plugin will scan all packages;
-* ```postman.baseUrl``` mandatory. A valid URL that will be used as the base URL for all endpoints discovered;
 * ```postman.basicAuth.*``` optional.
 
 ## pom.xml
-The plugin is bound to the ```package``` phase by default. The CLI equivalent XML configuration is:
+The CLI equivalent XML configuration is:
 ```
 <plugin>
     <groupId>net.cpollet.maven.plugins</groupId>
     <artifactId>postman-maven-plugin</artifactId>
     <version>...</version>
     <configuration>
-        <packagesToScan>
-            <value>a</value>
-            <value>b</value>
+        <packagesToScan> <!-- optional -->
+            <value>net.cpollet</value>
+            <!-- ... -->
         </packagesToScan>
-        <baseUrl>http://localhost</baseUrl>
-        <basicAuth>
-            <username>username</username>
-            <password>password</password>
-        </basicAuth>
+        <environments>
+            <environment>
+                <name>default</name>
+                <baseUrl>http://localhost</baseUrl>
+                <basicAuth> <!-- optional -->
+                    <username>username</username>
+                    <password>password</password>
+                </basicAuth>
+            <environment>
+            <!-- ... -->
+        <environments>
     </configuration>
-    <executions>
+    <executions> <!-- optional -->
         <execution>
             <id>generate-postman</id>
+            <phase>package</package>
             <goals>
                 <goal>generate</goal>
             </goals>
@@ -52,6 +62,7 @@ The plugin is bound to the ```package``` phase by default. The CLI equivalent XM
     </executions>
 </plugin>
 ```
+The ```<execution>``` section is optional, as the plugin binds it's ```generate``` goal to the ```package``` phase. 
 
 # Build
 ```

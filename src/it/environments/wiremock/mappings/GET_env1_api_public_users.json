@@ -1,0 +1,14 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/env1/api/public/users",
+    "basicAuthCredentials" : {
+      "username" : "username1",
+      "password" : "password1"
+    }
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "ok.json"
+  }
+}

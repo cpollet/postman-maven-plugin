@@ -36,7 +36,11 @@
                 <artifactId>@project.artifactId@</artifactId>
                 <version>@project.version@</version>
                 <configuration>
-                    <baseUrl>http://${docker.container.wiremock.name}:8080</baseUrl>
+                    <environments>
+                        <environment>
+                            <baseUrl>http://${docker.container.wiremock.name}:8080</baseUrl>
+                        </environment>
+                    </environments>
                 </configuration>
                 <executions>
                     <execution>

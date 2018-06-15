@@ -1,19 +1,16 @@
 package net.cpollet.maven.plugins.postman;
 
 import org.apache.maven.plugin.testing.MojoRule;
-import org.apache.maven.plugin.testing.WithoutMojo;
 
 import org.junit.Ignore;
 import org.junit.Rule;
-
-import static org.junit.Assert.*;
 
 import org.junit.Test;
 
 import java.io.File;
 
 @Ignore
-public class GenerateTest {
+public class GenerateMojoTest {
     @Rule
     public MojoRule rule = new MojoRule() {
         @Override
@@ -26,13 +23,12 @@ public class GenerateTest {
     };
 
     @Test
-    public void testSomething() throws Exception {
-        File pom = new File("target/test-classes/project-to-test");
+    public void generate_needsEitherBaseUrlOrEnvironment() throws Exception {
+        File pom = new File("target/test-classes/test");
 
-        Generate myMojo = (Generate) rule.lookupConfiguredMojo(pom, "package");
-        assertNotNull(myMojo);
-        myMojo.execute();
+        GenerateMojo generateMojo = (GenerateMojo) rule.lookupConfiguredMojo(pom, "generateMojo");
 
+        generateMojo.execute();
     }
 }
 
