@@ -97,8 +97,4 @@ $ mvn clean deploy -Prelease
 $ mvn clean release:clean release:prepare
 $ mvn release:perform
 ```
-Check staging repo. Then either release from web UI or
-```
-$ cd target/checkout
-$ mvn nexus-staging:release
-```
+Release from web UI
