@@ -23,7 +23,8 @@ addons:
       secure: $SONARQUBE_TOKEN
 
 script:
-  - mvn install sonar:sonar -P run-its
+  - mvn install -P run-its
+  - mvn -f plugin/pom.xml sonar:sonar
 
 after_success:
   - curl -s -d "chat_id=$TELEGRAM_CHAT_ID&text=postman-maven-plugin - success" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" &> /dev/null
