@@ -1,5 +1,6 @@
 package net.cpollet.maven.plugins.postman.frontend.postman;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -45,6 +46,7 @@ public class Postman implements Generator {
     @Override
     public String generate() {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         Collection collection = Collection.builder()
                 .info(information(collectionName))
@@ -121,6 +123,10 @@ public class Postman implements Generator {
     }
 
     private Auth auth(Context c) {
+        if (c.getUsername() == null || c.getUsername().trim().equals("")) {
+            return null;
+        }
+
         return Auth.builder()
                 .basic(Arrays.asList(
                         BasicAuthUsername.builder().value(c.getUsername()).build(),
@@ -139,7 +145,11 @@ public class Postman implements Generator {
     }
 
     private Body body(Endpoint e) {
-        return Body.builder()
+        if (e.getBodyType() == Void.class) {
+            return null;
+        }
+
+            return Body.builder()
                 .raw(JsonExample.from(e.getBodyType()).generate())
                 .build();
     }

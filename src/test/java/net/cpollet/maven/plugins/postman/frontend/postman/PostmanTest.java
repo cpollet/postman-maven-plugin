@@ -187,7 +187,7 @@ public class PostmanTest {
     }
 
     @Test
-    public void generate_endpointPayload() {
+    public void generate_endpointPayload_whenSet() {
         // GIVEN
         Endpoint endpoint = new Endpoint(
                 null,
@@ -213,6 +213,33 @@ public class PostmanTest {
                 .contains("\"body\" : {")
                 .contains("\"mode\" : \"raw\"")
                 .contains("\"raw\" : \"{\\n  \\\"username\\\": \\\"string\\\",\\n  \\\"password\\\": \\\"string\\\"\\n}\"");
+    }
+
+    @Test
+    public void generate_endpointWithoutPayload_whenNotSet() {
+        // GIVEN
+        Endpoint endpoint = new Endpoint(
+                null,
+                null,
+                null,
+                null,
+                Void.class,
+                Collections.emptyList(),
+                Void.class
+        );
+
+        Postman postman = new Postman(
+                "collectionName",
+                Collections.singletonList(endpoint),
+                contexts
+        );
+
+        // WHEN
+        String result = postman.generate();
+
+        // THEN
+        Assertions.assertThat(result)
+                .doesNotContain("\"body\" :");
     }
 
     @Test
@@ -243,7 +270,7 @@ public class PostmanTest {
     }
 
     @Test
-    public void generate_endpointBasicAuth() {
+    public void generate_endpointBasicAuth_whenPresent() {
         // GIVEN
         Endpoint endpoint = new Endpoint(
                 null,
@@ -282,6 +309,33 @@ public class PostmanTest {
                 .contains("\"value\" : \"username\"")
                 .contains("\"key\" : \"password\"")
                 .contains("\"value\" : \"password\"");
+    }
+
+    @Test
+    public void generate_endpointNoBasicAuth_whenNotPresent() {
+        // GIVEN
+        Endpoint endpoint = new Endpoint(
+                null,
+                null,
+                null,
+                null,
+                Void.class,
+                Collections.emptyList(),
+                Void.class
+        );
+
+        Postman postman = new Postman(
+                "collectionName",
+                Collections.singletonList(endpoint),
+                contexts
+        );
+
+        // WHEN
+        String result = postman.generate();
+
+        // THEN
+        Assertions.assertThat(result)
+                .doesNotContain("\"auth\" :");
     }
 
     @Test
