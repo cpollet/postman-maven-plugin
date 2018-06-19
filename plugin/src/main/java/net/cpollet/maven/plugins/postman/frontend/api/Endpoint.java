@@ -6,15 +6,17 @@ import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @ToString
 @Getter
-public class Endpoint {
+public class Endpoint implements Comparable<Endpoint> {
     private static final String SLASH = "/";
 
     private final String group;
     private final String name;
+    private final List<Class> parameterTypes;
     private final Verb verb;
     private final String path;
     private final Class bodyType;
@@ -40,6 +42,22 @@ public class Endpoint {
 
     private String trimSlashes(String str) {
         return StringUtils.stripEnd(StringUtils.stripStart(str, SLASH), SLASH);
+    }
+
+    @Override
+    public int compareTo(Endpoint other) {
+        String signature = signature(this);
+        String otherSignature = signature(other);
+
+        return signature.compareTo(otherSignature);
+    }
+
+    private String signature(Endpoint e) {
+        List<String> types = e.parameterTypes.stream()
+                .map(Class::getCanonicalName)
+                .collect(Collectors.toList());
+
+        return String.format("%s#%s(%s)", e.group, e.name, String.join(",", types));
     }
 
     public enum Verb {

@@ -14,6 +14,7 @@ import javax.ws.rs.Path;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -88,5 +89,9 @@ public class MethodAdapter {
 
     public String getName() {
         return method.getName();
+    }
+
+    public List<Class> getParameterTypes() {
+        return Arrays.asList(method.getParameterTypes());
     }
 }

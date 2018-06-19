@@ -22,6 +22,8 @@ import net.cpollet.maven.plugins.postman.frontend.postman.data.Request;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -71,6 +73,7 @@ public class Postman implements Generator {
         return endpoints.stream()
                 .collect(Collectors.groupingBy(Endpoint::getGroup))
                 .entrySet().stream()
+                .sorted(Comparator.comparing(Map.Entry::getKey))
                 .map(g -> Folder.builder()
                         .name(g.getKey())
                         .item(endpoints(g.getValue(), c))

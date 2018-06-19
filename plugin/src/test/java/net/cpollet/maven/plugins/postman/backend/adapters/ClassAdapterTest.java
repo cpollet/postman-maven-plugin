@@ -45,14 +45,14 @@ public class ClassAdapterTest {
         ClassAdapter adapter = new ClassAdapter(Rest.class);
 
         // WHEN
-        Endpoint endpoint = adapter.getEndpoints().get(0);
+        Endpoint endpoint = adapter.getEndpoints().get(1);
 
         // THEN
         Assertions.assertThat(endpoint.getGroup())
                 .isEqualTo("Rest");
 
         Assertions.assertThat(endpoint.getPath())
-                .isEqualTo("/index");
+                .isEqualTo("/get(String,String)");
 
         Assertions.assertThat(endpoint.getVerb())
                 .isEqualTo(Endpoint.Verb.GET);
@@ -65,14 +65,34 @@ public class ClassAdapterTest {
 
         Assertions.assertThat(endpoint.getResponseType())
                 .isEqualTo(Boolean.class);
+
+        Assertions.assertThat(endpoint.getParameterTypes())
+                .containsExactly(String.class, String.class);
+    }
+
+    @Test
+    public void getEndpoints_sortedEndpoints() {
+        // GIVEN
+        ClassAdapter adapter = new ClassAdapter(Rest.class);
+
+        // WHEN
+        List<Endpoint> endpoints = adapter.getEndpoints();
+
+        // THEN
+        Assertions.assertThat(endpoints.get(0).getPath())
+                .isEqualTo("/get(String)");
+        Assertions.assertThat(endpoints.get(1).getPath())
+                .isEqualTo("/get(String,String)");
     }
 
     @Path("/")
-    private class Rest {
+    private interface Rest {
         @GET
-        @Path("/index")
-        public Boolean get(@QueryParam("pathParam") String param, String body) {
-            return null;
-        }
+        @Path("/get(String,String)")
+        Boolean get(@QueryParam("pathParam") String param, String body);
+
+        @GET
+        @Path("/get(String)")
+        Boolean get(@QueryParam("pathParam") String param);
     }
 }

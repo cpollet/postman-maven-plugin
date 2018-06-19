@@ -21,12 +21,14 @@ public class ClassAdapter {
                         .map(m -> new Endpoint(
                                 clazz.getSimpleName(),
                                 m.getName(),
+                                m.getParameterTypes(),
                                 m.getVerb(),
                                 getPath() + m.getPath(),
                                 m.getBodyParameterType(),
                                 m.getQueryParametersNames(),
                                 m.getResponseType()
                         ))
+                        .sorted(Endpoint::compareTo)
                         .collect(Collectors.toList())
         );
     }

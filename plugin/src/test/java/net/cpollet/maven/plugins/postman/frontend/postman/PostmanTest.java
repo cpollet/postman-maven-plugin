@@ -84,6 +84,7 @@ public class PostmanTest {
                 "endpointName",
                 null,
                 null,
+                null,
                 Void.class,
                 Collections.emptyList(),
                 Void.class
@@ -107,6 +108,7 @@ public class PostmanTest {
     public void generate_endpointUrl() {
         // GIVEN
         Endpoint endpoint = new Endpoint(
+                null,
                 null,
                 null,
                 null,
@@ -135,6 +137,7 @@ public class PostmanTest {
     public void generate_endpointMethod() {
         // GIVEN
         Endpoint endpoint = new Endpoint(
+                null,
                 null,
                 null,
                 Endpoint.Verb.GET,
@@ -166,6 +169,7 @@ public class PostmanTest {
                 "endpointName",
                 null,
                 null,
+                null,
                 Void.class,
                 Collections.emptyList(),
                 Void.class
@@ -190,6 +194,7 @@ public class PostmanTest {
     public void generate_endpointPayload_whenSet() {
         // GIVEN
         Endpoint endpoint = new Endpoint(
+                null,
                 null,
                 null,
                 null,
@@ -223,6 +228,7 @@ public class PostmanTest {
                 null,
                 null,
                 null,
+                null,
                 Void.class,
                 Collections.emptyList(),
                 Void.class
@@ -246,6 +252,7 @@ public class PostmanTest {
     public void generate_endpointGetParameters() {
         // GIVEN
         Endpoint endpoint = new Endpoint(
+                null,
                 null,
                 null,
                 null,
@@ -273,6 +280,7 @@ public class PostmanTest {
     public void generate_endpointBasicAuth_whenPresent() {
         // GIVEN
         Endpoint endpoint = new Endpoint(
+                null,
                 null,
                 null,
                 null,
@@ -319,6 +327,7 @@ public class PostmanTest {
                 null,
                 null,
                 null,
+                null,
                 Void.class,
                 Collections.emptyList(),
                 Void.class
@@ -346,6 +355,7 @@ public class PostmanTest {
                 null,
                 null,
                 null,
+                null,
                 Void.class,
                 Collections.emptyList(),
                 Void.class
@@ -363,6 +373,59 @@ public class PostmanTest {
         // THEN
         Assertions.assertThat(result)
                 .contains("\"name\" : \"__default\"");
+    }
+
+    @Test
+    public void generate_groupsAreSorted() {
+        // GIVEN
+        Endpoint endpointA = new Endpoint(
+                "endpointA",
+                null,
+                null,
+                null,
+                null,
+                Void.class,
+                Collections.emptyList(),
+                Void.class
+        );
+        Endpoint endpointB = new Endpoint(
+                "endpointB",
+                null,
+                null,
+                null,
+                null,
+                Void.class,
+                Collections.emptyList(),
+                Void.class
+        );
+        Endpoint endpointC = new Endpoint(
+                "endpointC",
+                null,
+                null,
+                null,
+                null,
+                Void.class,
+                Collections.emptyList(),
+                Void.class
+        );
+
+        Postman postman = new Postman(
+                "collectionName",
+                Arrays.asList(endpointA, endpointC, endpointB),
+                contexts
+        );
+
+        // WHEN
+        String result = postman.generate();
+        int posA = result.indexOf("endpointA");
+        int posB = result.indexOf("endpointB");
+        int posC = result.indexOf("endpointC");
+
+        // THEN
+        Assertions.assertThat(posB)
+                .isGreaterThan(posA);
+        Assertions.assertThat(posC)
+                .isGreaterThan(posB);
     }
 
     @Data

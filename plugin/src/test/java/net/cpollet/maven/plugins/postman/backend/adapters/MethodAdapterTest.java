@@ -427,4 +427,30 @@ public class MethodAdapterTest {
     public String nonVoid() {
         return null;
     }
+
+    @Test
+    public void getParameterTypes_returnsNonEmptyParameterTypesWhenThereAreSome() throws NoSuchMethodException {
+        // GIVEN
+        MethodAdapter adapter = adapt("bodyParam", String.class);
+
+        // WHEN
+        List<Class> parameterTypes = adapter.getParameterTypes();
+
+        // THEN
+        Assertions.assertThat(parameterTypes)
+                .containsExactly(String.class);
+    }
+
+    @Test
+    public void getParameterTypes_returnsEmptyParameterTypesWhenThereAreNone() throws NoSuchMethodException {
+        // GIVEN
+        MethodAdapter adapter = adapt("headEndpoint");
+
+        // WHEN
+        List<Class> parameterTypes = adapter.getParameterTypes();
+
+        // THEN
+        Assertions.assertThat(parameterTypes)
+                .isEmpty();
+    }
 }
