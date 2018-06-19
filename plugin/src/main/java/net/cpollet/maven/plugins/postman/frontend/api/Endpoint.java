@@ -52,6 +52,24 @@ public class Endpoint implements Comparable<Endpoint> {
         return signature.compareTo(otherSignature);
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (other == null) {
+            return false;
+        }
+
+        if (!(other instanceof Endpoint)) {
+            return false;
+        }
+
+        return signature(this).equals(signature((Endpoint) other));
+    }
+
+    @Override
+    public int hashCode() {
+        return signature(this).hashCode();
+    }
+
     private String signature(Endpoint e) {
         List<String> types = e.parameterTypes.stream()
                 .map(Class::getCanonicalName)
